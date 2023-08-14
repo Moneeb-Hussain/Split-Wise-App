@@ -49,6 +49,7 @@ function NavBar(props) {
           </Box>
     </Box>
   );
+  
   const container =
     window !== undefined ? () => window().document.body : undefined;
   return (
