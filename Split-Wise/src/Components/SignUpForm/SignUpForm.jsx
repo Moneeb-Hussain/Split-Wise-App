@@ -31,7 +31,7 @@ export default function SignUpForm() {
             <TextField
               label="Username"
               name="Username"
-              fullWidth={true}
+              fullWidth
               required
             />
           </Grid>
@@ -39,7 +39,7 @@ export default function SignUpForm() {
             <TextField
               label="Email"
               name="email"
-              fullWidth={true}
+              fullWidth
               required
             />
           </Grid>
@@ -48,7 +48,7 @@ export default function SignUpForm() {
               label="Password"
               name="password"
               type="password"
-              fullWidth={true}
+              fullWidth
               required
             />
           </Grid>
