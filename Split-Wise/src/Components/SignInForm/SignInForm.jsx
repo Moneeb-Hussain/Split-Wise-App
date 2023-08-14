@@ -7,13 +7,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDoc, doc, query, where, getDocs, setDoc, updateDoc, arrayUnion } from "firebase/firestore"
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Firebase/Firebase";
 import { Link, useNavigate } from "react-router-dom";
 
-export default function SignUpForm() {
-  const db = getFirestore(app)
+export default function SignInForm() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
@@ -21,24 +19,15 @@ export default function SignUpForm() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const formState = {
-      userName: data.get("userName"),
       email: data.get("email"),
       password: data.get("password"),
     };
     setSubmitButtonDisabled(true);
-    createUserWithEmailAndPassword(auth, formState.email, formState.password)
+    signInWithEmailAndPassword(auth, formState.email, formState.password)
       .then(async (response) => {
+        console.log(response)
         setSubmitButtonDisabled(false);
-        const user = response.user;
-        await updateProfile(user, {
-          displayName: formState.userName,
-        });
-        const userRef = db.collection("userdata").doc(user.uid);
-        await userRef.set({
-          userName: formState.userName,
-          email: formState.email,
-        });
-        navigate(`/${user.uid}`);
+        navigate("/");
       })
       .catch((error) => {
         setSubmitButtonDisabled(false);
@@ -59,19 +48,9 @@ export default function SignUpForm() {
         }}
       >
         <Typography component="h1" variant="h5" sx={{ m: 5 }}>
-          Let's Get Started
+          Sign In to your Account
         </Typography>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              name="userName"
-              id="userName"
-              label="User Name"
-              required
-              fullWidth
-              autoFocus
-            />
-          </Grid>
           <Grid item xs={12}>
             <TextField
               name="email"
@@ -100,17 +79,13 @@ export default function SignUpForm() {
           sx={{ mt: 3, mb: 2 }}
           fullWidth
         >
-          Sign Up
+          Sign In
         </Button>
         <Grid container justifyContent="flex-end">
           <Grid item>
-              <Typography 
-              component={Link}
-              to="/SignIn"
-              sx={{ color: "#333"}}
-              >
-                Already have an account? Sign In
-              </Typography>
+            <Typography component={Link} to="/SignUp" sx={{ color: "#333" }}>
+              New to this App ? Sign Up
+            </Typography>
           </Grid>
         </Grid>
       </Box>
