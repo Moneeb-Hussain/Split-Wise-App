@@ -27,29 +27,36 @@ function NavBar(props) {
   };
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        CashFlutter
+      <Typography
+        variant="body1"
+        component={Link}
+        to="/"
+        sx={{
+          flexGrow: 1,
+          color: "#fff",
+          display: { xs: "none", sm: "block" },
+          textDecoration: "none",
+        }}
+      >
+        {" "}
+        ExpenseSync
       </Typography>
       <Divider />
       <Box sx={{ display: { xs: "block", sm: "none" } }}>
-            <ListItemButton
-              component={Link}
-              to="/SignUp"
-              sx={{ color: "#333", mt: "30px", mb: "16px" }}
-            >
-              <Typography component="span">Sign Up</Typography>
-            </ListItemButton>
-            <ListItemButton
-              component={Link}
-              to="/SignIn"
-              sx={{ color: "#333" }}
-            >
-              <Typography component="span">Sign In</Typography>
-            </ListItemButton>
-          </Box>
+        <ListItemButton
+          component={Link}
+          to="/SignUp"
+          sx={{ color: "#333", mt: "30px", mb: "16px" }}
+        >
+          <Typography component="span">Sign Up</Typography>
+        </ListItemButton>
+        <ListItemButton component={Link} to="/SignIn" sx={{ color: "#333" }}>
+          <Typography component="span">Sign In</Typography>
+        </ListItemButton>
+      </Box>
     </Box>
   );
-  
+
   const container =
     window !== undefined ? () => window().document.body : undefined;
   return (
@@ -67,12 +74,18 @@ function NavBar(props) {
             <MenuIcon />
           </IconButton>
           <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            variant="body1"
+            component={Link}
+            to="/"
+            sx={{
+              flexGrow: 1,
+              color: "#fff",
+              display: { xs: "none", sm: "block" },
+              textDecoration: "none",
+            }}
           >
             {" "}
-            Cash
+            ExpenseSync
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "flex" } }}>
             <ListItemButton
@@ -114,11 +127,11 @@ function NavBar(props) {
       </Box>
       <Box component="main" sx={{ p: 3 }}>
         <Toolbar />
-        <Typography>
+        {/* <Typography>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique
           unde fugit veniam eius, perspiciatis sunt? Corporis qui ducimus
           quibusdam
-        </Typography>
+        </Typography> */}
       </Box>
     </Box>
   );

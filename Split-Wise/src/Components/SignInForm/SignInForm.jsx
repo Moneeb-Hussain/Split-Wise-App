@@ -25,9 +25,9 @@ export default function SignInForm() {
     setSubmitButtonDisabled(true);
     signInWithEmailAndPassword(auth, formState.email, formState.password)
       .then(async (response) => {
-        console.log(response)
+        const user = response.user;
         setSubmitButtonDisabled(false);
-        navigate("/");
+        navigate(`/user/${user.uid}`)
       })
       .catch((error) => {
         setSubmitButtonDisabled(false);
@@ -40,7 +40,6 @@ export default function SignInForm() {
         component="form"
         onSubmit={handleSubmit}
         sx={{
-          mt: 8,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",

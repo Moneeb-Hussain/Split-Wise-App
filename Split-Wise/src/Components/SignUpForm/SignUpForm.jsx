@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { getFirestore, collection, addDoc, getDoc, doc, query, where, getDocs, setDoc, updateDoc, arrayUnion } from "firebase/firestore"
-import { auth } from "../../Firebase/Firebase";
+import { auth,app } from "../../Firebase/Firebase";
 import { Link, useNavigate } from "react-router-dom";
 
 export default function SignUpForm() {
@@ -33,8 +33,8 @@ export default function SignUpForm() {
         await updateProfile(user, {
           displayName: formState.userName,
         });
-        const userRef = db.collection("userdata").doc(user.uid);
-        await userRef.set({
+        const userRef = collection(db, "userdata");
+        await setDoc(doc(userRef, user.uid), {
           userName: formState.userName,
           email: formState.email,
         });
@@ -51,7 +51,6 @@ export default function SignUpForm() {
         component="form"
         onSubmit={handleSubmit}
         sx={{
-          mt: 8,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
