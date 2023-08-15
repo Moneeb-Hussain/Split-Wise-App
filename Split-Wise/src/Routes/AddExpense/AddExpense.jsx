@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { collection, getDocs, getFirestore } from "firebase/firestore";
+import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
 import {
   Box,
   Button,
@@ -12,7 +12,6 @@ import {
   Typography,
 } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
-
 export default function AddExpense() {
   const [participants, setParticipants] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState("");
@@ -27,10 +26,10 @@ export default function AddExpense() {
     event.preventDefault();
     if (participantsExpenses.length === 0) {
       setErrorMessage("Add atleast one participant to split expense");
-      return; 
+      return;
     }
     const data = new FormData(event.currentTarget);
-    const formState = {
+    const expenseData = {
       Description: data.get("description"),
       Total_Bill: parseFloat(data.get("total_bill")),
       User_Contribution: parseFloat(data.get("user_contribution")),
@@ -38,7 +37,8 @@ export default function AddExpense() {
       Creator_Id: auth.currentUser.uid,
       Participants: participantsExpenses,
     };
-    console.log(formState);
+    const expensesCollection = collection(db, "expenses");
+    const addedExpenseRef = addDoc(expensesCollection, expenseData);
   };
   const handleClick = () => {
     const Participant_Email = participant_email_ref.current;
@@ -192,8 +192,8 @@ export default function AddExpense() {
         </Grid>
       </Box>
       {errorMessage && (
-            <Typography sx={{ color: "red"}}>{errorMessage}</Typography>
-          )}
+        <Typography sx={{ color: "red" }}>{errorMessage}</Typography>
+      )}
     </Container>
   );
 }

@@ -22,41 +22,10 @@ function UserDashboard() {
   const handleChangee = () => {
     navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
   };
+  const handleChange2=()=>{
+    navigate(`/user/${auth.currentUser.uid}/User-Expenses`);
+  };
   return (
-    // <Container>
-    //   <Typography variant="h6" align="center">
-    //     User Dashboard
-    //   </Typography>
-    //   <Box sx={{ width: '100%', mt: '50px' }}>
-    //     <Tabs
-    //       value={value}
-    //       onChange={handleChange}
-    //       textColor="secondary"
-    //       indicatorColor="secondary"
-    //       aria-label="secondary tabs example"
-    //     >
-    //       <Tab value="one" label="Add Expense" />
-    //       <Tab value="two" label="Add Friend" />
-    //     </Tabs>
-    //   </Box>
-    //   {/* Content based on selected tab */}
-    //   {value === 'one' && (
-    //     <Typography variant="body1" sx={{ mt: 3 }}>
-    //       Welcome {auth.currentUser.displayName}
-    //     </Typography>
-    //   )}
-    //   {value === 'two' && (
-    //     <Box sx={{ mt: 3 }}>
-    //       <form>
-    //         <TextField label="Friend Name" fullWidth />
-    //         <TextField label="Friend Email" fullWidth />
-    //         <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-    //           Add Friend
-    //         </Button>
-    //       </form>
-    //     </Box>
-    //   )}
-    // </Container>
     <Container>
       <Typography variant="h6" align="center">
         User Dashboard
@@ -78,6 +47,7 @@ function UserDashboard() {
           <Tab value="two" label="Add Friend" />
         </Tabs>
         <Button onClick={handleChangee}> Add Expense </Button>
+        <Button onClick={handleChange2}> User Expenses </Button>
       </Box>
     </Container>
   );

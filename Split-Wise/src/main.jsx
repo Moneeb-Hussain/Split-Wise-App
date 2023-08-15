@@ -8,6 +8,7 @@ import SignIn from "./Routes/SignIn/SignIn";
 import UserDashBoard from "./Routes/UserDashBoard/UserDashBoard";
 import ProtectedRuote from "./Routes/ProtectedRoute/ProtectedRoute";
 import AddExpense from "./Routes/AddExpense/AddExpense";
+import UserExpense from "./Routes/UserExpense/UserExpense";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
           {
             path: "/user/:uid/Add-Expense",
             element: <AddExpense />,
+          },
+          {
+            path: "/user/:uid/User-Expenses",
+            element: <UserExpense />,
           },
         ]
       },
