@@ -5,19 +5,13 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import { Link } from "react-router-dom";
 
 const drawerWidth = 240;
-const navItems = ["SignUp", "SignIn"];
-
 function NavBar(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -45,12 +39,12 @@ function NavBar(props) {
       <Box sx={{ display: { xs: "block", sm: "none" } }}>
         <ListItemButton
           component={Link}
-          to="/SignUp"
+          to="/user/SignUp"
           sx={{ color: "#333", mt: "30px", mb: "16px" }}
         >
           <Typography component="span">Sign Up</Typography>
         </ListItemButton>
-        <ListItemButton component={Link} to="/SignIn" sx={{ color: "#333" }}>
+        <ListItemButton component={Link} to="/user/SignIn" sx={{ color: "#333" }}>
           <Typography component="span">Sign In</Typography>
         </ListItemButton>
       </Box>
@@ -90,14 +84,14 @@ function NavBar(props) {
           <Box sx={{ display: { xs: "none", sm: "flex" } }}>
             <ListItemButton
               component={Link}
-              to="/SignUp"
+              to="/user/SignUp"
               sx={{ color: "#fff", mr: "16px" }}
             >
               <Typography component="span">Sign Up</Typography>
             </ListItemButton>
             <ListItemButton
               component={Link}
-              to="/SignIn"
+              to="/user/SignIn"
               sx={{ color: "#fff" }}
             >
               <Typography component="span">Sign In</Typography>
@@ -127,11 +121,6 @@ function NavBar(props) {
       </Box>
       <Box component="main" sx={{ p: 3 }}>
         <Toolbar />
-        {/* <Typography>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique
-          unde fugit veniam eius, perspiciatis sunt? Corporis qui ducimus
-          quibusdam
-        </Typography> */}
       </Box>
     </Box>
   );

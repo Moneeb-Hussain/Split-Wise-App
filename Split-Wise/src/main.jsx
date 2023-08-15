@@ -5,6 +5,8 @@ import Home from "./Routes/Home/Home";
 import Root from "./Components/Root/Root";
 import SignUp from "./Routes/SignUp/SignUp";
 import SignIn from "./Routes/SignIn/SignIn";
+import UserDashBoard from "./Routes/UserDashBoard/UserDashBoard";
+import ProtectedRuote from "./Routes/ProtectedRoute/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -12,17 +14,31 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       {
-        path: "/SignUp",
+        path: "/",
+        element: <Home />,
+      },
+      {
+        path: '/',
+        element: <ProtectedRuote />,
+        children: [
+          {
+            path: "user/:uid",
+            element: <UserDashBoard />,
+          }
+        ]
+      },
+      {
+        path: "/user/SignUp",
         element: <SignUp />,
       },
       {
-        path: "/SignIn",
+        path: "/user/SignIn",
         element: <SignIn />,
       },
       {
-        path: "user/:uid",
-        element: <Home />,
-      },
+        path: "*",
+        element: <SignIn />
+      }
     ],
   },
 ]);

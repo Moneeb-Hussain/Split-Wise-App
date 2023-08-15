@@ -105,7 +105,7 @@ export default function SignUpForm() {
           <Grid item>
               <Typography 
               component={Link}
-              to="/SignIn"
+              to="/user/SignIn"
               sx={{ color: "#333"}}
               >
                 Already have an account? Sign In
