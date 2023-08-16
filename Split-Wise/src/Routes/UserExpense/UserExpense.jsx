@@ -6,10 +6,9 @@ import { app, auth } from "../../Firebase/Firebase";
 export default function UserExpense() {
   const [expensesData, setExpensesData] = useState([]);
   const db = getFirestore(app);
-
   const handleGenerateExpenses = async () => {
     try {
-      const expensesCollection = collection(db, "expenses");
+      const expensesCollection = collection(db, "expensesTest");
       const querySnapshot = await getDocs(expensesCollection);
       const expenses = querySnapshot.docs.map((element) => ({
         id: element.id,
@@ -17,10 +16,10 @@ export default function UserExpense() {
       }));
       const userExpenses = expenses.filter(
         (expense) =>
-          expense.creatorId === auth.currentUser.uid ||
-          (expense.friendExpense &&
-            expense.friendExpense.some(
-              (friend) => friend.email === auth.currentUser?.email
+          expense.Creator_email === auth.currentUser.email ||
+          (expense.Participants &&
+            expense.Participants.some(
+              (Participant) => Participant.email === auth.currentUser?.email
             ))
       );
       setExpensesData(userExpenses);
@@ -28,7 +27,7 @@ export default function UserExpense() {
       console.error("Error fetching expenses:", error.message);
     }
   };
-
+  
   return (
     <Container maxWidth="md">
       <Box mt={2} mb={2}>
@@ -58,17 +57,20 @@ export default function UserExpense() {
               sx={{ marginBottom: "2rem", padding: "1rem" }}
             >
               <Typography variant="body1" gutterBottom>
-                Description: {expense.description}
+                Description: {expense.Description}
+              </Typography>
+              <Typography variant="body1" gutterBottom>
+                Date: {expense.Date}
               </Typography>
               <Button
                 sx={{ mt: 3, mb: 1 }}
                 variant="outlined"
                 color="primary"
-                onClick={() => handleExpenseDetails(expense)}
+                onClick={() => handletransaction(expense)}
               >
-                View Details
+                View Report
               </Button>
-            </Paper>
+             </Paper>
           ))}
         </Box>
       )}

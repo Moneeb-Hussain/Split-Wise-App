@@ -34,11 +34,17 @@ export default function AddExpense() {
       Total_Bill: parseFloat(data.get("total_bill")),
       User_Contribution: parseFloat(data.get("user_contribution")),
       User_Order: parseFloat(data.get("user_order")),
-      Creator_Id: auth.currentUser.uid,
+      Creator_email: auth.currentUser.email,
+      Date: data.get("date"),
       Participants: participantsExpenses,
     };
-    const expensesCollection = collection(db, "expenses");
+    const expensesCollection = collection(db, "expensesTest");
     const addedExpenseRef = addDoc(expensesCollection, expenseData);
+    event.target.reset();
+    setParticipantsExpenses([]);
+    setInputFieldsVisible(false);
+    setErrorMessage("");
+    setSelectedParticipant("");
   };
   const handleClick = () => {
     const Participant_Email = participant_email_ref.current;
@@ -110,6 +116,14 @@ export default function AddExpense() {
               name="description"
               id="description"
               label="Description"
+              required
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              name="date"
+              id="date"
+              type="date"
               required
             />
           </Grid>
