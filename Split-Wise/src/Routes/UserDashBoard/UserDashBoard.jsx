@@ -13,7 +13,6 @@ import { Link, useNavigate } from "react-router-dom";
 function UserDashboard() {
   const navigate = useNavigate();
   console.log(auth.currentUser.uid);
-  const [value, setValue] = React.useState("two"); // Initial selected tab value
   const handleChangee = () => {
     navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
   };

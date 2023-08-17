@@ -45,6 +45,7 @@ export default function SignUpForm() {
         setError(error.message);
       });
   };
+  //signup
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -103,12 +104,14 @@ export default function SignUpForm() {
         </Button>
         <Grid container justifyContent="flex-end">
           <Grid item>
+          <Typography component="span" variant="body2"> Already have an account ? </Typography>
               <Typography 
               component={Link}
               to="/user/SignIn"
+              variant="body2"
               sx={{ color: "#333"}}
               >
-                Already have an account? Sign In
+              Sign In
               </Typography>
           </Grid>
         </Grid>
@@ -117,7 +120,7 @@ export default function SignUpForm() {
         color="error"
         fontWeight="bold"
         variant="body1"
-        sx={{ textAlign: "center" }}
+        sx={{ textAlign: "center", mt:2 }}
       >
         {error}
       </Typography>

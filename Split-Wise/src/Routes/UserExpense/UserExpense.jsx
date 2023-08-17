@@ -57,7 +57,9 @@ export default function UserExpense() {
         credits.push({ email, amount: balances[email] });
       }
     }
+
     const transactions = [];
+
     while (credits.length > 0 && debts.length > 0) {
       const credit = credits[0];
       const debt = debts[0];
@@ -80,13 +82,16 @@ export default function UserExpense() {
         debts.shift();
       }
     }
+
     return transactions;
   };
   const handletransaction = (expense) => {
     const transactions = handleExpenseDetails(expense);
     setSelectedExpenseSummary(transactions);
     setSelectedExpenseId(expense.id);
+    console.log(transactions);
   };
+  console.log(selectedExpenseSummary);
   return (
     <Container maxWidth="md">
       <Box mt={2} mb={2}>

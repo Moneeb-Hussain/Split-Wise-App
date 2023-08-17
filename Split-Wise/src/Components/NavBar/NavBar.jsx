@@ -1,4 +1,3 @@
-import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -13,13 +12,14 @@ import Button from "@mui/material/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/Firebase";
 import { signOut } from "firebase/auth";
+import React, { useEffect, useState } from "react";
 
 const drawerWidth = 240;
 function NavBar(props) {
   const { window } = props;
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [userauth, setUserAuth] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [userauth, setUserAuth] = useState(false);
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
@@ -28,14 +28,16 @@ function NavBar(props) {
       .catch((error) => {
         console.log(error.message);
       });
-  };
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      setUserAuth(true);
-    } else {
-      setUserAuth(false);
-    }
-  });
+  }; 
+    useEffect(()=>{
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserAuth(true);
+      } else {
+        setUserAuth(false);
+      }
+    });
+  },[auth])
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };

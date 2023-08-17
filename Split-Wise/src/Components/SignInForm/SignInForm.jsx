@@ -27,7 +27,7 @@ export default function SignInForm() {
       .then(async (response) => {
         const user = response.user;
         setSubmitButtonDisabled(false);
-        navigate(`/user/${user.uid}`)
+        navigate(`/user/${user.uid}`);
       })
       .catch((error) => {
         setSubmitButtonDisabled(false);
@@ -58,6 +58,7 @@ export default function SignInForm() {
               type="email"
               required
               fullWidth
+              autoFocus
             />
           </Grid>
           <Grid item xs={12}>
@@ -82,8 +83,18 @@ export default function SignInForm() {
         </Button>
         <Grid container justifyContent="flex-end">
           <Grid item>
-            <Typography component={Link} to="/user/SignUp" sx={{ color: "#333" }}>
-              New to this App ? Sign Up
+            <Typography component="span" variant="body2">
+              {" "}
+              New to this App ?{" "}
+            </Typography>
+            <Typography
+              variant="body2"
+              component={Link}
+              to="/user/SignUp"
+              sx={{ color: "#333"}}
+            >
+              {" "}
+              Sign Up
             </Typography>
           </Grid>
         </Grid>
@@ -92,7 +103,7 @@ export default function SignInForm() {
         color="error"
         fontWeight="bold"
         variant="body1"
-        sx={{ textAlign: "center" }}
+        sx={{ textAlign: "center", mt:2 }}
       >
         {error}
       </Typography>

@@ -166,11 +166,12 @@ export default function AddExpense() {
               name="description"
               id="description"
               label="Description"
+              fullWidth
               required
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="date" id="date" type="date" required />
+            <TextField name="date" id="date" type="date" required fullWidth/>
           </Grid>
           <Grid item xs={12}>
             <TextField
@@ -179,6 +180,7 @@ export default function AddExpense() {
               inputRef={total_bill_ref}
               onChange={handleButton}
               label="Total Bill"
+              fullWidth
               onInput={handleInputValidation}
               type="number"
               required
@@ -190,6 +192,7 @@ export default function AddExpense() {
               id="user_contribution"
               label="Your Contribution"
               type="number"
+              fullWidth
               onInput={handleInputValidation}
               required
             />
@@ -200,6 +203,7 @@ export default function AddExpense() {
               id="user_order"
               label="Your Order"
               type="number"
+              fullWidth
               onInput={handleInputValidation}
               required
             />
@@ -236,6 +240,7 @@ export default function AddExpense() {
                   inputRef={participant_order_ref}
                   label="Amount Ordered"
                   type="number"
+                  fullWidth
                   onInput={handleInputValidation}
                   defaultValue=""
                 />
@@ -245,6 +250,7 @@ export default function AddExpense() {
                   inputRef={participant_bill_ref}
                   label="Amount Payed"
                   type="number"
+                  fullWidth
                   onInput={handleInputValidation}
                   defaultValue=""
                 />
