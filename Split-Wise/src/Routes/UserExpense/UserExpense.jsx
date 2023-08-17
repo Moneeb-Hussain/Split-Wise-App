@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { Box, Button, Container, Paper, Typography } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
+import { useNavigate } from "react-router-dom";
 
 export default function UserExpense() {
+  const navigate=useNavigate();
   const [expensesData, setExpensesData] = useState([]);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
   const [selectedExpenseSummary, setSelectedExpenseSummary] = useState([]);
   const db = getFirestore(app);
+  useEffect(()=>{
+    handleGenerateExpenses();
+  },[])
+  const handleClick=()=>{
+    navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
+  };
   const handleGenerateExpenses = async () => {
     try {
       const expensesCollection = collection(db, "expensesTest");
@@ -28,7 +36,7 @@ export default function UserExpense() {
     } catch (error) {
       console.error("Error fetching expenses:", error.message);
     }
-  };
+  };  
   const handleExpenseDetails = (expense) => {
     const { User_Order, Creator_email, User_Contribution, Participants } =
       expense;
@@ -94,26 +102,22 @@ export default function UserExpense() {
   console.log(selectedExpenseSummary);
   return (
     <Container maxWidth="md">
-      <Box mt={2} mb={2}>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={handleGenerateExpenses}
-        >
-          Generate Expenses
-        </Button>
-      </Box>
+      <Box display="flex" justifyContent="space-between">
       <Typography
         variant="h5"
         gutterBottom
-        sx={{ mt: 5, mb: 5, fontWeight: "bold" }}
+        sx={{ mt: 2, mb: 2, fontWeight: "bold" }}
       >
-        {auth.currentUser.displayName} Expenses:
+        {auth.currentUser.displayName ? auth.currentUser.displayName : "User" }'s Expenses:
       </Typography>
+      <Button variant="outlined" onClick={handleClick} sx={{ mb: 2 }}>
+        Add Expense
+      </Button>
+      </Box>
       {expensesData.length === 0 ? (
         <Typography variant="body1"> No expenses to display. </Typography>
       ) : (
-        <Box display="flex" flexDirection="column">
+        <Box display="flex" flexDirection="column" sx={{mt:2}}>
           {expensesData.map((expense) => (
             <Paper
               key={expense.id}

@@ -15,13 +15,16 @@ import {
   ListItemText,
 } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
+import { useNavigate } from "react-router-dom";
 export default function AddExpense() {
+ 
   const [participants, setParticipants] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState("");
   const [participantsExpenses, setParticipantsExpenses] = useState([]);
   const [addButtonDisabled, setAddButtonDisabled] = useState(true);
   const [inputFieldsVisible, setInputFieldsVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const navigate=useNavigate();
   const participant_bill_ref = useRef(0);
   const participant_order_ref = useRef(0);
   const participant_email_ref = useRef(null);
@@ -58,12 +61,13 @@ export default function AddExpense() {
     }
     if (totalContributions !== totalBill || totalOrders !== totalBill) {
       setErrorMessage(
-        "Sum of Orders and Contributions must be equal to Total Bill"
+        "Orders Sum and Contributions Sum must be equal to Total Bill"
       );
       return;
     }
     const expensesCollection = collection(db, "expensesTest");
     const addedExpenseRef = addDoc(expensesCollection, expenseData);
+    navigate(`/user/${auth.currentUser.uid}`)
     event.target.reset();
     setParticipantsExpenses([]);
     setInputFieldsVisible(false);
