@@ -5,6 +5,8 @@ import { app, auth } from "../../Firebase/Firebase";
 
 export default function UserExpense() {
   const [expensesData, setExpensesData] = useState([]);
+  const [selectedExpenseId, setSelectedExpenseId] = useState(null);
+  const [selectedExpenseSummary, setSelectedExpenseSummary] = useState([]);
   const db = getFirestore(app);
   const handleGenerateExpenses = async () => {
     try {
@@ -27,7 +29,64 @@ export default function UserExpense() {
       console.error("Error fetching expenses:", error.message);
     }
   };
-  
+  const handleExpenseDetails = (expense) => {
+    const { User_Order, Creator_email, User_Contribution, Participants } =
+      expense;
+    const expenses = [...Participants];
+    expenses.push({
+      email: Creator_email,
+      Payed: User_Contribution,
+      Order: User_Order,
+    });
+
+    const balances = {};
+    expenses.forEach((expense) => {
+      if (!balances[expense.email]) {
+        balances[expense.email] = 0;
+      }
+      balances[expense.email] += expense.Payed - expense.Order;
+    });
+
+    const debts = [];
+    const credits = [];
+
+    for (const email in balances) {
+      if (balances[email] < 0) {
+        debts.push({ email, amount: balances[email] });
+      } else if (balances[email] > 0) {
+        credits.push({ email, amount: balances[email] });
+      }
+    }
+    const transactions = [];
+    while (credits.length > 0 && debts.length > 0) {
+      const credit = credits[0];
+      const debt = debts[0];
+      const x = Math.min(credit.amount, -debt.amount);
+
+      transactions.push({
+        debtor: debt.email,
+        creditor: credit.email,
+        amount: x,
+      });
+
+      credit.amount -= x;
+      debt.amount += x;
+
+      if (credit.amount === 0) {
+        credits.shift();
+      }
+
+      if (debt.amount === 0) {
+        debts.shift();
+      }
+    }
+    return transactions;
+  };
+  const handletransaction = (expense) => {
+    const transactions = handleExpenseDetails(expense);
+    setSelectedExpenseSummary(transactions);
+    setSelectedExpenseId(expense.id);
+  };
   return (
     <Container maxWidth="md">
       <Box mt={2} mb={2}>
@@ -70,7 +129,27 @@ export default function UserExpense() {
               >
                 View Report
               </Button>
-             </Paper>
+              {selectedExpenseSummary.length > 0 &&
+                selectedExpenseId === expense.id && (
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      sx={{ mt: 3, mb: 3, fontWeight: "bold" }}
+                    >
+                      {" "}
+                      Expense Summary:
+                    </Typography>
+                    <ul>
+                      {selectedExpenseSummary.map((transaction, index) => (
+                        <li key={index}>
+                          {transaction.debtor} owes {transaction.creditor} $
+                          {transaction.amount}
+                        </li>
+                      ))}
+                    </ul>
+                  </Box>
+                )}
+            </Paper>
           ))}
         </Box>
       )}
