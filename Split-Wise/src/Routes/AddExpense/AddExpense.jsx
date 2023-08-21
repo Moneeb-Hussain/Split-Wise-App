@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { addDoc, collection, getDocs, getFirestore } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, getFirestore, updateDoc, arrayUnion } from "firebase/firestore";
 import {
   Box,
   Button,
@@ -17,7 +17,7 @@ import {
 import { app, auth } from "../../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
 export default function AddExpense() {
- 
+
   const [participants, setParticipants] = useState([]);
   const [selectedParticipant, setSelectedParticipant] = useState("");
   const [participantsExpenses, setParticipantsExpenses] = useState([]);
@@ -30,7 +30,7 @@ export default function AddExpense() {
   const participant_email_ref = useRef(null);
   const total_bill_ref = useRef(0);
   const db = getFirestore(app);
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (participantsExpenses.length === 0) {
       setErrorMessage("Add atleast one participant to split expense");
@@ -66,7 +66,12 @@ export default function AddExpense() {
       return;
     }
     const expensesCollection = collection(db, "expensesTest");
-    const addedExpenseRef = addDoc(expensesCollection, expenseData);
+    const addedExpenseRef = await addDoc(expensesCollection, expenseData);
+    const userRef = doc(collection(db, 'userdata'), auth.currentUser.uid);
+       await updateDoc(userRef, {
+        expenseIds: arrayUnion(addedExpenseRef.id),
+    });
+
     navigate(`/user/${auth.currentUser.uid}`)
     event.target.reset();
     setParticipantsExpenses([]);

@@ -13,6 +13,7 @@ export default function UserExpense() {
   useEffect(()=>{
     handleGenerateExpenses();
   },[])
+  console.log(selectedExpenseId);
   const handleClick=()=>{
     navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
   };
@@ -97,9 +98,7 @@ export default function UserExpense() {
     const transactions = handleExpenseDetails(expense);
     setSelectedExpenseSummary(transactions);
     setSelectedExpenseId(expense.id);
-    console.log(transactions);
   };
-  console.log(selectedExpenseSummary);
   return (
     <Container maxWidth="md">
       <Box display="flex" justifyContent="space-between">
@@ -151,8 +150,8 @@ export default function UserExpense() {
                     <ul>
                       {selectedExpenseSummary.map((transaction, index) => (
                         <li key={index}>
-                          {transaction.debtor} owes {transaction.creditor} $
-                          {transaction.amount}
+                          {transaction.debtor} <b>owes</b> {transaction.creditor} <b>$
+                          {transaction.amount}</b>
                         </li>
                       ))}
                     </ul>

@@ -11,6 +11,7 @@ import {useNavigate } from "react-router-dom";
 import DashBoard from "../../Components/DashBoard/DashBoard";
 
 function UserDashboard() {
+  let a=10;
   const navigate = useNavigate();
   const handleAddExpense = () => {
     navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
