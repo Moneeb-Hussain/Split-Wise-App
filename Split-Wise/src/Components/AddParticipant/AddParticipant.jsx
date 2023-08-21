@@ -18,6 +18,8 @@ import {
   ListItemText,
 } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
+import { toast } from 'react-toastify';
+
 export default function AddParticipant({
   setParticipants,
   participantsExpenses,
@@ -85,11 +87,13 @@ export default function AddParticipant({
         ParticipantExpense,
       ]);
       setErrorMessage("");
+      toast.success('Participant Added Successfully!')
+      toast.info("Fetching expenses...")
+      setInputFieldsVisible(false);
+      setSelectedParticipant("");
     } else {
-      setErrorMessage("Please fill in all fields.");
+      toast.error('Please Fill All fields')
     }
-    setInputFieldsVisible(false);
-    setSelectedParticipant("");
     if (participantEmail) participantEmail.value = "";
     if (participantOrder) participantOrder.value = "";
     if (participantExpense) participantExpense.value = "";

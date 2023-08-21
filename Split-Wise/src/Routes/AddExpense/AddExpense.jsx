@@ -11,6 +11,7 @@ import {
 import { app, auth } from "../../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
 import AddParticipant from "../../Components/AddParticipant/AddParticipant";
+import { toast } from 'react-toastify';
 
 export default function AddExpense() {
   const [participants, setParticipants] = useState([]);
@@ -70,6 +71,7 @@ export default function AddExpense() {
     }
     const expensesCollection = collection(db, "expenses");
     const addedExpenseRef = await addDoc(expensesCollection, expenseData);
+    toast.success("Expense Added Successfully")
     navigate(`/user/${auth.currentUser.uid}`);
     event.target.reset();
     setParticipantsExpenses([]);

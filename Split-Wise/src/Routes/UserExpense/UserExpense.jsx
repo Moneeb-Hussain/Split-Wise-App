@@ -3,13 +3,18 @@ import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { Box, Button, Container, Paper, Typography } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
+import {calculateTransactions} from "../../Utilities/transactionUtils"
+import { toast } from "react-toastify";
+import ExpenseSkeleton from "../../Components/Skeleton/Skeleton";
 
 export default function UserExpense() {
   const navigate=useNavigate();
   const [expensesData, setExpensesData] = useState([]);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
   const [selectedExpenseSummary, setSelectedExpenseSummary] = useState([]);
+  const [loading, setLoading] = useState(true);
   const db = getFirestore(app);
+
   useEffect(()=>{
     handleGenerateExpenses();
   },[])
@@ -17,9 +22,11 @@ export default function UserExpense() {
   const handleClick=()=>{
     navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
   };
+
   const handleNavigation=()=>{
     navigate(`/user/${auth.currentUser.uid}`);
   };
+  
   const handleGenerateExpenses = async () => {
     try {
       const expensesCollection = collection(db, "expenses");
@@ -36,69 +43,16 @@ export default function UserExpense() {
               (Participant) => Participant.email === auth.currentUser?.email
             ))
       );
+      setLoading(false);
       setExpensesData(userExpenses);
     } catch (error) {
-      console.error("Error fetching expenses:", error.message);
+      setLoading(false);
+      toast.error("Error Fetching Expense")
     }
   };  
-  const handleExpenseDetails = (expense) => {
-    const { userOrder, creatorEmail, userContribution, Participants } =
-      expense;
-    const expenses = [...Participants];
-    expenses.push({
-      email: creatorEmail,
-      Payed: userContribution,
-      Order: userOrder,
-    });
-
-    const balances = {};
-    expenses.forEach((expense) => {
-      if (!balances[expense.email]) {
-        balances[expense.email] = 0;
-      }
-      balances[expense.email] += expense.Payed - expense.Order;
-    });
-
-    const debts = [];
-    const credits = [];
-
-    for (const email in balances) {
-      if (balances[email] < 0) {
-        debts.push({ email, amount: balances[email] });
-      } else if (balances[email] > 0) {
-        credits.push({ email, amount: balances[email] });
-      }
-    }
-
-    const transactions = [];
-
-    while (credits.length > 0 && debts.length > 0) {
-      const credit = credits[0];
-      const debt = debts[0];
-      const x = Math.min(credit.amount, -debt.amount);
-
-      transactions.push({
-        debtor: debt.email,
-        creditor: credit.email,
-        amount: x,
-      });
-
-      credit.amount -= x;
-      debt.amount += x;
-
-      if (credit.amount === 0) {
-        credits.shift();
-      }
-
-      if (debt.amount === 0) {
-        debts.shift();
-      }
-    }
-
-    return transactions;
-  };
+  
   const handletransaction = (expense) => {
-    const transactions = handleExpenseDetails(expense);
+    const transactions = calculateTransactions(expense);
     setSelectedExpenseSummary(transactions);
     setSelectedExpenseId(expense.id);
   };
@@ -121,7 +75,10 @@ export default function UserExpense() {
       </Button>
       </Box>
       </Box>
-      {expensesData.length === 0 ? (
+      {loading ? (
+          <ExpenseSkeleton /> 
+        ) : 
+      expensesData.length === 0 ? (
         <Typography variant="body1"> No expenses to display. </Typography>
       ) : (
         <Box display="flex" flexDirection="column" sx={{mt:2}}>
