@@ -17,6 +17,7 @@ export default function SignUpForm() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -45,7 +46,7 @@ export default function SignUpForm() {
         setError(error.message);
       });
   };
-  //signup
+
   return (
     <Container component="main" maxWidth="xs">
       <Box

@@ -3,7 +3,6 @@ import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { Box, Button, Container, Paper, Typography } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { Card, CardContent } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import {
   doc,
   updateDoc,
@@ -14,9 +13,10 @@ export default function DashBoard() {
   const db = getFirestore(app);
   const [expenses, setExpenses] = useState([]);
   const currentUserEmail = auth.currentUser.email;
+
   const fetchExpenses = async () => {
     try {
-      const expensesCollection = collection(db, "expensesTest");
+      const expensesCollection = collection(db, "expenses");
       const querySnapshot = await getDocs(expensesCollection);
       console.log(querySnapshot);
       console.log(querySnapshot.docs);
@@ -26,7 +26,7 @@ export default function DashBoard() {
       }));
       const userExpenses = expensesData.filter(
         (expense) =>
-          expense.Creator_email === auth.currentUser.email ||
+          expense.creatorEmail === auth.currentUser.email ||
           (expense.Participants &&
             expense.Participants.some(
               (Participant) => Participant.email === auth.currentUser?.email
@@ -37,17 +37,19 @@ export default function DashBoard() {
       console.error("Error fetching expenses:", error.message);
     }
   };
+
   useEffect(() => {
     fetchExpenses();
   }, []);
+
   const calculateTransactions = (expense) => {
-    const { User_Order, Creator_email, User_Contribution, Participants } =
+    const { userOrder, creatorEmail, userContribution, Participants } =
       expense;
     const expenses = [...Participants];
     expenses.push({
-      email: Creator_email,
-      Payed: User_Contribution,
-      Order: User_Order,
+      email: creatorEmail,
+      Payed: userContribution,
+      Order: userOrder,
     });
 
     const balances = {};
@@ -92,6 +94,51 @@ export default function DashBoard() {
     return transactions;
   };
   
+  const handleSettleClick = async (transaction) => {
+    try {
+      const expenseRef = doc(db, "expenses", transaction.expenseId);
+      const expenseSnapshot = await getDoc(expenseRef);
+      if (expenseSnapshot.exists()) {
+        const expenseData = expenseSnapshot.data();
+        if (
+          expenseData.creatorEmail === transaction.debtor ||
+          expenseData.creatorEmail === transaction.creditor
+        ) {
+          let updatedCreatorEmail = expenseData.creatorEmail;
+          updatedCreatorEmail=="a"
+          const updatedParticipants = expenseData.Participants.filter(
+            (element) =>
+              element.email !== transaction.debtor &&
+              element.email !== transaction.creditor
+          );
+          const updatedExpenseData = {
+            ...expenseData,
+            creatorEmail: updatedCreatorEmail,
+            Participants: updatedParticipants,
+          };
+          await updateDoc(expenseRef, updatedExpenseData);
+          await fetchExpenses();
+          console.log("Transaction settled and database updated.");
+        } else {
+          const updatedParticipants = expenseData.Participants.filter(
+            (participant) =>
+              participant.email !== transaction.debtor &&
+              participant.email !== transaction.creditor
+          );
+          const updatedExpenseData = {
+            ...expenseData,
+            Participants: updatedParticipants,
+          };
+          await updateDoc(expenseRef, updatedExpenseData);
+          await fetchExpenses();
+          console.log("Transaction settled and database updated.");
+        }
+      }
+    } catch (error) {
+      console.error("Error settling transaction:", error.message);
+    }
+  };  
+
   const allTransactions = [];
   for (const expense of expenses) {
     const transactions = calculateTransactions(expense);

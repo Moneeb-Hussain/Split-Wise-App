@@ -13,13 +13,16 @@ export default function UserExpense() {
   useEffect(()=>{
     handleGenerateExpenses();
   },[])
-  console.log(selectedExpenseId);
+
   const handleClick=()=>{
     navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
   };
+  const handleNavigation=()=>{
+    navigate(`/user/${auth.currentUser.uid}`);
+  };
   const handleGenerateExpenses = async () => {
     try {
-      const expensesCollection = collection(db, "expensesTest");
+      const expensesCollection = collection(db, "expenses");
       const querySnapshot = await getDocs(expensesCollection);
       const expenses = querySnapshot.docs.map((element) => ({
         id: element.id,
@@ -27,7 +30,7 @@ export default function UserExpense() {
       }));
       const userExpenses = expenses.filter(
         (expense) =>
-          expense.Creator_email === auth.currentUser.email ||
+          expense.creatorEmail === auth.currentUser.email ||
           (expense.Participants &&
             expense.Participants.some(
               (Participant) => Participant.email === auth.currentUser?.email
@@ -39,13 +42,13 @@ export default function UserExpense() {
     }
   };  
   const handleExpenseDetails = (expense) => {
-    const { User_Order, Creator_email, User_Contribution, Participants } =
+    const { userOrder, creatorEmail, userContribution, Participants } =
       expense;
     const expenses = [...Participants];
     expenses.push({
-      email: Creator_email,
-      Payed: User_Contribution,
-      Order: User_Order,
+      email: creatorEmail,
+      Payed: userContribution,
+      Order: userOrder,
     });
 
     const balances = {};
@@ -109,9 +112,14 @@ export default function UserExpense() {
       >
         {auth.currentUser.displayName ? auth.currentUser.displayName : "User" }'s Expenses:
       </Typography>
+      <Box display="flex" flexDirection="column" >
       <Button variant="outlined" onClick={handleClick} sx={{ mb: 2 }}>
         Add Expense
       </Button>
+      <Button variant="outlined" onClick={handleNavigation} sx={{ mb: 2 }}>
+        DashBoard
+      </Button>
+      </Box>
       </Box>
       {expensesData.length === 0 ? (
         <Typography variant="body1"> No expenses to display. </Typography>

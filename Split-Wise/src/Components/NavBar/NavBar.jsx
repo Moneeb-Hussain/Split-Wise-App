@@ -64,14 +64,14 @@ function NavBar(props) {
           to="/user/SignUp"
           sx={{ color: "#333", mt: "30px", mb: "16px" }}
         >
-          <Typography component="span">Sign Up</Typography>
+          <Typography component="span">SIGN UP</Typography>
         </ListItemButton>
         <ListItemButton
           component={Link}
           to="/user/SignIn"
           sx={{ color: "#333" }}
         >
-          <Typography component="span">Sign In</Typography>
+          <Typography component="span">SIGN IN</Typography>
         </ListItemButton>
       </Box>
     </Box>
@@ -104,18 +104,18 @@ function NavBar(props) {
               textDecoration: "none",
             }}
           >
-            {" "}
             ExpenseSync
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "flex" } }}>
             {userauth ? (
-              <Button
-                variant="outlined"
-                sx={{ color: "#fff" }}
-                onClick={handleLogout}
-              >
-                Sign Out
-              </Button>
+              <ListItemButton
+                  component={Button}
+                  onClick={handleLogout}
+                  sx={{ color: "#fff" }}
+                >
+                  <Typography component="span">SIGN OUT
+                  </Typography>
+                </ListItemButton>
             ) : (
               <>
                 <ListItemButton
@@ -123,14 +123,15 @@ function NavBar(props) {
                   to="/user/SignUp"
                   sx={{ color: "#fff", mr: "16px" }}
                 >
-                  <Typography component="span">Sign Up</Typography>
+                  <Typography component="span">SIGN UP</Typography>
                 </ListItemButton>
                 <ListItemButton
                   component={Link}
                   to="/user/SignIn"
                   sx={{ color: "#fff" }}
                 >
-                  <Typography component="span">Sign In</Typography>
+                  <Typography component="span">SIGN IN
+                  </Typography>
                 </ListItemButton>
               </>
             )}
