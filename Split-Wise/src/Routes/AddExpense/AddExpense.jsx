@@ -60,11 +60,11 @@ export default function AddExpense() {
       totalOrders += participantExpense.Order;
     }
     if (totalContributions > totalBill || totalOrders > totalBill) {
-      setErrorMessage("Total contributions or orders can't exceed total bill");
+      toast.error("Total contributions or orders can't exceed total bill");
       return;
     }
     if (totalContributions !== totalBill || totalOrders !== totalBill) {
-      setErrorMessage(
+      toast.error(
         "Orders Sum and Contributions Sum must be equal to Total Bill"
       );
       return;

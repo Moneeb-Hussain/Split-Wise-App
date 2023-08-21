@@ -61,6 +61,13 @@ export default function AddParticipant({
       participantExpense.value !== "" &&
       participantOrder.value !== ""
     ) {
+      const existingParticipant = participantsExpenses.find(
+        (participant) => participant.email === participantEmail.value
+      );
+      if (existingParticipant) {
+        toast.error('Participant with the same email already exists!');
+        return;
+      }
       let totalContributions = 0;
       let totalOrders = 0;
       for (const element of participantsExpenses) {
@@ -72,9 +79,7 @@ export default function AddParticipant({
         totalBill.value ||
         totalOrders + parseFloat(participantOrder.value) > totalBill.value
       ) {
-        setErrorMessage(
-          "Total orders or Contributions can't exceed Total Bill"
-        );
+        toast.error("Total orders or Contributions can't exceed Total Bill")
         return;
       }
       const ParticipantExpense = {
@@ -88,7 +93,6 @@ export default function AddParticipant({
       ]);
       setErrorMessage("");
       toast.success('Participant Added Successfully!')
-      toast.info("Fetching expenses...")
       setInputFieldsVisible(false);
       setSelectedParticipant("");
     } else {
