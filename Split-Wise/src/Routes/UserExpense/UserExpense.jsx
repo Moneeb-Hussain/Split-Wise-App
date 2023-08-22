@@ -3,30 +3,31 @@ import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { Box, Button, Container, Paper, Typography } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
-import {calculateTransactions} from "../../Utilities/transactionUtils"
+import { calculateTransactions } from "../../Utilities/transactionUtils";
 import { toast } from "react-toastify";
 import ExpenseSkeleton from "../../Components/Skeleton/Skeleton";
 
 export default function UserExpense() {
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [expensesData, setExpensesData] = useState([]);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
+  const [expenseSummary,setExpenseSummary]=useState([])
   const [selectedExpenseSummary, setSelectedExpenseSummary] = useState([]);
   const [loading, setLoading] = useState(true);
   const db = getFirestore(app);
 
-  useEffect(()=>{
+  useEffect(() => {
     handleGenerateExpenses();
-  },[])
+  }, []);
 
-  const handleClick=()=>{
+  const handleClick = () => {
     navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
   };
 
-  const handleNavigation=()=>{
+  const handleNavigation = () => {
     navigate(`/user/${auth.currentUser.uid}`);
   };
-  
+
   const handleGenerateExpenses = async () => {
     try {
       const expensesCollection = collection(db, "expenses");
@@ -47,10 +48,10 @@ export default function UserExpense() {
       setExpensesData(userExpenses);
     } catch (error) {
       setLoading(false);
-      toast.error("Error Fetching Expense")
+      toast.error("Error Fetching Expense");
     }
-  };  
-  
+  };
+
   const handletransaction = (expense) => {
     const transactions = calculateTransactions(expense);
     setSelectedExpenseSummary(transactions);
@@ -59,29 +60,32 @@ export default function UserExpense() {
   return (
     <Container maxWidth="md">
       <Box display="flex" justifyContent="space-between">
-      <Typography
-        variant="h5"
-        gutterBottom
-        sx={{ mt: 2, mb: 2, fontWeight: "bold" }}
-      >
-        {auth.currentUser.displayName ? auth.currentUser.displayName : "User" }'s Expenses:
-      </Typography>
-      <Box display="flex" flexDirection="column" >
-      <Button variant="outlined" onClick={handleClick} sx={{ mb: 2 }}>
-        Add Expense
-      </Button>
-      <Button variant="outlined" onClick={handleNavigation} sx={{ mb: 2 }}>
-        DashBoard
-      </Button>
-      </Box>
+        <Typography
+          variant="h5"
+          gutterBottom
+          sx={{ mt: 2, mb: 2, fontWeight: "bold" }}
+        >
+          {auth.currentUser.displayName ? auth.currentUser.displayName : "User"}
+          's Expenses:
+        </Typography>
+        <Box display="flex" flexDirection="column">
+          <Button variant="outlined" onClick={handleClick} sx={{ mb: 2 }}>
+            Add Expense
+          </Button>
+          <Button variant="outlined" onClick={handleNavigation} sx={{ mb: 2 }}>
+            DashBoard
+          </Button>
+        </Box>
       </Box>
       {loading ? (
-          <ExpenseSkeleton /> 
-        ) : 
-      expensesData.length === 0 ? (
+        <>
+          <ExpenseSkeleton />
+          <ExpenseSkeleton />
+        </>
+      ) : expensesData.length === 0 ? (
         <Typography variant="body1"> No expenses to display. </Typography>
       ) : (
-        <Box display="flex" flexDirection="column" sx={{mt:2}}>
+        <Box display="flex" flexDirection="column" sx={{ mt: 2 }}>
           {expensesData.map((expense) => (
             <Paper
               key={expense.id}
@@ -115,8 +119,8 @@ export default function UserExpense() {
                     <ul>
                       {selectedExpenseSummary.map((transaction, index) => (
                         <li key={index}>
-                          {transaction.debtor} <b>owes</b> {transaction.creditor} <b>$
-                          {transaction.amount}</b>
+                          {transaction.debtor} <b>owes</b>{" "}
+                          {transaction.creditor} <b>${transaction.amount}</b>
                         </li>
                       ))}
                     </ul>

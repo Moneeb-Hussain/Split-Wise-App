@@ -1,9 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  collection,
-  getDocs,
-  getFirestore,
-} from "firebase/firestore";
+import { collection, getDocs, getFirestore } from "firebase/firestore";
 import {
   Box,
   Button,
@@ -18,15 +14,16 @@ import {
   ListItemText,
 } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 export default function AddParticipant({
   setParticipants,
   participantsExpenses,
   participants,
+  userContribution,
+  userOrder,
   addButtonDisabled,
   setParticipantsExpenses,
-  setErrorMessage,
   totalBill,
   handleInputValidation,
 }) {
@@ -39,6 +36,7 @@ export default function AddParticipant({
   useEffect(() => {
     fetchParticipants();
   }, []);
+
   async function fetchParticipants() {
     const participantsCollection = collection(db, "userdata");
     const participantsSnapshot = await getDocs(participantsCollection);
@@ -65,7 +63,7 @@ export default function AddParticipant({
         (participant) => participant.email === participantEmail.value
       );
       if (existingParticipant) {
-        toast.error('Participant with the same email already exists!');
+        toast.error("Participant with the same email already exists!");
         return;
       }
       let totalContributions = 0;
@@ -75,11 +73,16 @@ export default function AddParticipant({
         totalOrders += element.Order;
       }
       if (
-        totalContributions + parseFloat(participantExpense.value) >
-        totalBill.value ||
-        totalOrders + parseFloat(participantOrder.value) > totalBill.value
+        (totalContributions +
+          parseFloat(participantExpense.value) +
+          parseFloat(userContribution.value || 0)) >
+          totalBill.value ||
+        (totalOrders +
+          parseFloat(participantOrder.value) +
+          parseFloat(userOrder.value || 0) )>
+          totalBill.value
       ) {
-        toast.error("Total orders or Contributions can't exceed Total Bill")
+        toast.error("Total orders or Contributions can't exceed Total Bill");
         return;
       }
       const ParticipantExpense = {
@@ -91,12 +94,12 @@ export default function AddParticipant({
         ...prevExpenses,
         ParticipantExpense,
       ]);
-      setErrorMessage("");
-      toast.success('Participant Added Successfully!')
+      toast.success("Participant Added Successfully!");
       setInputFieldsVisible(false);
       setSelectedParticipant("");
     } else {
-      toast.error('Please Fill All fields')
+      toast.error("Please Fill All fields");
+      setSelectedParticipant("");
     }
     if (participantEmail) participantEmail.value = "";
     if (participantOrder) participantOrder.value = "";

@@ -90,7 +90,7 @@ export default function SignInForm() {
             <Typography
               variant="body2"
               component={Link}
-              to="/user/SignUp"
+              to="/user/signup"
               sx={{ color: "#333"}}
             >
               {" "}

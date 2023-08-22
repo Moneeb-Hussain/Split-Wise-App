@@ -11,7 +11,7 @@ import {
 import { app, auth } from "../../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
 import AddParticipant from "../../Components/AddParticipant/AddParticipant";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 export default function AddExpense() {
   const [participants, setParticipants] = useState([]);
@@ -20,8 +20,9 @@ export default function AddExpense() {
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const totalBillRef = useRef(0);
+  const userContributionRef=useRef(0)
+  const userOrderRef=useRef(0)
   const db = getFirestore(app);
-
   const handleInputValidation = (e) => {
     e.target.value = Math.max(0, e.target.value);
   };
@@ -37,7 +38,7 @@ export default function AddExpense() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (participantsExpenses.length === 0) {
-      setErrorMessage("Add atleast one participant to split expense");
+      toast.error("Add atleast one participant to split expense");
       return;
     }
     const data = new FormData(event.currentTarget);
@@ -71,7 +72,7 @@ export default function AddExpense() {
     }
     const expensesCollection = collection(db, "expenses");
     const addedExpenseRef = await addDoc(expensesCollection, expenseData);
-    toast.success("Expense Added Successfully")
+    toast.success("Expense Added Successfully");
     navigate(`/user/${auth.currentUser.uid}`);
     event.target.reset();
     setParticipantsExpenses([]);
@@ -120,6 +121,7 @@ export default function AddExpense() {
             <TextField
               name="userContribution"
               id="userContribution"
+              inputRef={userContributionRef}
               label="Your Contribution"
               type="number"
               fullWidth
@@ -131,6 +133,7 @@ export default function AddExpense() {
             <TextField
               name="userOrder"
               id="userOrder"
+              inputRef={userOrderRef}
               label="Your Order"
               type="number"
               fullWidth
@@ -145,9 +148,10 @@ export default function AddExpense() {
               setParticipantsExpenses={setParticipantsExpenses}
               participantsExpenses={participantsExpenses}
               totalBill={totalBillRef.current}
+              userContribution={userContributionRef.current}
+              userOrder={userOrderRef.current}
               addButtonDisabled={addButtonDisabled}
               handleInputValidation={handleInputValidation}
-              setErrorMessage={setErrorMessage}
             />
           </Grid>
           <Button
