@@ -1,35 +1,39 @@
-import { useState, useEffect, useRef } from "react";
-import { addDoc, collection, doc, getDocs, getFirestore, updateDoc, arrayUnion } from "firebase/firestore";
+import { useState, useRef } from "react";
+import { addDoc, collection, getFirestore } from "firebase/firestore";
 import {
   Box,
   Button,
   Container,
   Grid,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
-  ListItem,
-  List,
-  ListItemText,
 } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
-export default function AddExpense() {
+import AddParticipant from "../../Components/AddParticipant/AddParticipant";
+import { toast } from 'react-toastify';
 
+export default function AddExpense() {
   const [participants, setParticipants] = useState([]);
-  const [selectedParticipant, setSelectedParticipant] = useState("");
   const [participantsExpenses, setParticipantsExpenses] = useState([]);
   const [addButtonDisabled, setAddButtonDisabled] = useState(true);
-  const [inputFieldsVisible, setInputFieldsVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate=useNavigate();
-  const participant_bill_ref = useRef(0);
-  const participant_order_ref = useRef(0);
-  const participant_email_ref = useRef(null);
-  const total_bill_ref = useRef(0);
+  const navigate = useNavigate();
+  const totalBillRef = useRef(0);
   const db = getFirestore(app);
+
+  const handleInputValidation = (e) => {
+    e.target.value = Math.max(0, e.target.value);
+  };
+
+  const handleButton = () => {
+    if (totalBillRef.current.value > 0) {
+      setAddButtonDisabled(false);
+    } else {
+      setAddButtonDisabled(true);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (participantsExpenses.length === 0) {
@@ -40,15 +44,15 @@ export default function AddExpense() {
     const expenseData = {
       Description: data.get("description"),
       Total_Bill: parseFloat(data.get("total_bill")),
-      User_Contribution: parseFloat(data.get("user_contribution")),
-      User_Order: parseFloat(data.get("user_order")),
-      Creator_email: auth.currentUser.email,
+      userContribution: parseFloat(data.get("userContribution")),
+      userOrder: parseFloat(data.get("userOrder")),
+      creatorEmail: auth.currentUser.email,
       Date: data.get("date"),
       Participants: participantsExpenses,
     };
     const totalBill = expenseData.Total_Bill;
-    const userContribution = expenseData.User_Contribution;
-    const userOrder = expenseData.User_Order;
+    const userContribution = expenseData.userContribution;
+    const userOrder = expenseData.userOrder;
     let totalContributions = userContribution;
     let totalOrders = userOrder;
     for (const participantExpense of participantsExpenses) {
@@ -56,105 +60,22 @@ export default function AddExpense() {
       totalOrders += participantExpense.Order;
     }
     if (totalContributions > totalBill || totalOrders > totalBill) {
-      setErrorMessage("Total contributions or orders can't exceed total bill");
+      toast.error("Total contributions or orders can't exceed total bill");
       return;
     }
     if (totalContributions !== totalBill || totalOrders !== totalBill) {
-      setErrorMessage(
+      toast.error(
         "Orders Sum and Contributions Sum must be equal to Total Bill"
       );
       return;
     }
-    const expensesCollection = collection(db, "expensesTest");
+    const expensesCollection = collection(db, "expenses");
     const addedExpenseRef = await addDoc(expensesCollection, expenseData);
-    const userRef = doc(collection(db, 'userdata'), auth.currentUser.uid);
-       await updateDoc(userRef, {
-        expenseIds: arrayUnion(addedExpenseRef.id),
-    });
-
-    navigate(`/user/${auth.currentUser.uid}`)
+    toast.success("Expense Added Successfully")
+    navigate(`/user/${auth.currentUser.uid}`);
     event.target.reset();
     setParticipantsExpenses([]);
-    setInputFieldsVisible(false);
     setErrorMessage("");
-    setSelectedParticipant("");
-  };
-  const handleClick = () => {
-    const Participant_Email = participant_email_ref.current;
-    const Participant_Expense = participant_bill_ref.current;
-    const Participant_Order = participant_order_ref.current;
-    if (
-      Participant_Email &&
-      Participant_Expense &&
-      Participant_Order &&
-      Participant_Email.value !== "" &&
-      Participant_Expense.value !== "" &&
-      Participant_Order.value !== ""
-    ) {
-      let TotalBill = total_bill_ref.current;
-      let totalContributions = 0;
-      let totalOrders = 0;
-      for (const element of participantsExpenses) {
-        totalContributions += element.Payed;
-        totalOrders += element.Order;
-      }
-      if (
-        totalContributions + parseFloat(Participant_Order.value) >
-          TotalBill.value ||
-        totalOrders + parseFloat(Participant_Expense.value) > TotalBill.value
-      ) {
-        setErrorMessage(
-          "Total orders or Contributions can't exceed Total Bill"
-        );
-        return;
-      }
-      const ParticipantExpense = {
-        email: Participant_Email.value,
-        Payed: parseFloat(Participant_Expense.value),
-        Order: parseFloat(Participant_Order.value),
-      };
-
-      setParticipantsExpenses((prevExpenses) => [
-        ...prevExpenses,
-        ParticipantExpense,
-      ]);
-
-      setErrorMessage("");
-    } else {
-      setErrorMessage("Please fill in all fields.");
-    }
-
-    setInputFieldsVisible(false);
-    if (Participant_Email) Participant_Email.value = "";
-    if (Participant_Order) Participant_Order.value = "";
-    if (Participant_Expense) Participant_Expense.value = "";
-  };
-  console.log(participantsExpenses);
-  useEffect(() => {
-    async function fetchParticipants() {
-      const participantsCollection = collection(db, "userdata");
-      const participantsSnapshot = await getDocs(participantsCollection);
-      const participantsData = participantsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setParticipants(participantsData);
-    }
-    fetchParticipants();
-  }, []);
-  const handleButton = () => {
-    if (total_bill_ref.current.value > 0) {
-      setAddButtonDisabled(false);
-    } else {
-      setAddButtonDisabled(true);
-    }
-  };
-  const handleInputValidation = (e) => {
-    e.target.value = Math.max(0, e.target.value);
-  };
-  const onSelectParticipant = (participantId) => {
-    setSelectedParticipant(participantId);
-    setInputFieldsVisible(true);
   };
 
   return (
@@ -180,13 +101,13 @@ export default function AddExpense() {
             />
           </Grid>
           <Grid item xs={12}>
-            <TextField name="date" id="date" type="date" required fullWidth/>
+            <TextField name="date" id="date" type="date" required fullWidth />
           </Grid>
           <Grid item xs={12}>
             <TextField
               name="total_bill"
               id="total_bill"
-              inputRef={total_bill_ref}
+              inputRef={totalBillRef}
               onChange={handleButton}
               label="Total Bill"
               fullWidth
@@ -197,8 +118,8 @@ export default function AddExpense() {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              name="user_contribution"
-              id="user_contribution"
+              name="userContribution"
+              id="userContribution"
               label="Your Contribution"
               type="number"
               fullWidth
@@ -208,8 +129,8 @@ export default function AddExpense() {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              name="user_order"
-              id="user_order"
+              name="userOrder"
+              id="userOrder"
               label="Your Order"
               type="number"
               fullWidth
@@ -217,55 +138,18 @@ export default function AddExpense() {
               required
             />
           </Grid>
-          <Grid item xs={12}>
-            <InputLabel>Choose Participant</InputLabel>
-            <Select
-              defaultValue=""
-              inputRef={participant_email_ref}
-              value={selectedParticipant || ""}
-              onChange={(e) => onSelectParticipant(e.target.value)}
-            >
-              {participants.map((element) =>
-                element.email !== auth.currentUser.email ? (
-                  <MenuItem key={element.id} value={element.email}>
-                    {element.email}
-                  </MenuItem>
-                ) : null
-              )}
-            </Select>
-            <Button
-              variant="contained"
-              disabled={addButtonDisabled}
-              sx={{ mt: 3, mb: 2, ml: 2 }}
-              onClick={handleClick}
-            >
-              Add
-            </Button>
+          <Grid item xs={12} sx={{ paddingLeft: "0px" }}>
+            <AddParticipant
+              participants={participants}
+              setParticipants={setParticipants}
+              setParticipantsExpenses={setParticipantsExpenses}
+              participantsExpenses={participantsExpenses}
+              totalBill={totalBillRef.current}
+              addButtonDisabled={addButtonDisabled}
+              handleInputValidation={handleInputValidation}
+              setErrorMessage={setErrorMessage}
+            />
           </Grid>
-          {inputFieldsVisible && (
-            <>
-              <Grid item xs={12}>
-                <TextField
-                  inputRef={participant_order_ref}
-                  label="Amount Ordered"
-                  type="number"
-                  fullWidth
-                  onInput={handleInputValidation}
-                  defaultValue=""
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  inputRef={participant_bill_ref}
-                  label="Amount Payed"
-                  type="number"
-                  fullWidth
-                  onInput={handleInputValidation}
-                  defaultValue=""
-                />
-              </Grid>
-            </>
-          )}
           <Button
             type="submit"
             variant="contained"
@@ -282,46 +166,6 @@ export default function AddExpense() {
         >
           {errorMessage}
         </Typography>
-      )}
-      {participantsExpenses.length > 0 && (
-        <Box
-          sx={{
-            marginTop: 4,
-          }}
-        >
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: "bold" }}>
-            Participants:
-          </Typography>
-          <List>
-            {participantsExpenses.map((element, index) => (
-              <ListItem
-                key={index}
-                sx={{
-                  background: "#f5f5f5",
-                  width: "70%",
-                  marginBottom: "4px",
-                  borderRadius: "4px",
-                  padding: "8px",
-                }}
-              >
-                <ListItemText
-                  primary={
-                    <Typography variant="body2">
-                      <b>Participant</b>: {element.email}
-                    </Typography>
-                  }
-                  secondary={
-                    <Typography variant="body2" sx={{ mt: 2 }}>
-                      <b> Order</b>: {element.Order}
-                      <b style={{ marginLeft: "25px" }}>Payed</b>:
-                      {element.Payed}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            ))}
-          </List>
-        </Box>
       )}
     </Container>
   );
