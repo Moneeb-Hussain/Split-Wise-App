@@ -1,55 +1,52 @@
 import * as React from "react";
 import {
   Box,
-  Tabs,
-  Tab,
   Typography,
   Container,
   TextField,
   Button,
 } from "@mui/material";
 import { auth } from "../../Firebase/Firebase";
-import Home from "../Home/Home";
-import { Link, useNavigate } from "react-router-dom";
+import {useNavigate } from "react-router-dom";
+import DashBoard from "../../Components/DashBoard/DashBoard";
 
 function UserDashboard() {
+  let a=10;
   const navigate = useNavigate();
-  console.log(auth.currentUser.uid);
-  const [value, setValue] = React.useState("two"); // Initial selected tab value
-  const handleChange = (event, newValue) => {
-    setValue(newValue); // Update the selected tab value
-  };
-  const handleChangee = () => {
+  const handleAddExpense = () => {
     navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
   };
-  const handleChange2=()=>{
+  const handleUserExpense=()=>{
     navigate(`/user/${auth.currentUser.uid}/User-Expenses`);
   };
   return (
     <Container>
-      <Typography variant="h6" align="center">
-        User Dashboard
+    <Typography variant="h6" align="center" fontWeight="bold" fontSize="23px" >
+      User DashBoard
+    </Typography>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        mt: 2,
+        float: "right"
+      }}
+    >
+      <Button onClick={handleAddExpense} variant="outlined" sx={{ mb: 2 }}>
+        Add Expense
+      </Button>
+      <Button onClick={handleUserExpense} variant="outlined">
+        User Expenses
+      </Button>
+    </Box>
+    <Typography
+        variant="body2"
+        sx={{ mt: 10, ml: 5, fontSize:"25px"}}
+      >
+        {"Welcome"} {auth.currentUser.displayName ? auth.currentUser.displayName+"!": "User!" }
       </Typography>
-      <Box sx={{ width: "100%", mt: "50px" }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          textColor="secondary"
-          indicatorColor="secondary"
-          aria-label="secondary tabs example"
-        >
-          <Tab
-            value="one"
-            component={Link}
-            to="/user/:uid/Add-Expense"
-            label="Add Expense"
-          />
-          <Tab value="two" label="Add Friend" />
-        </Tabs>
-        <Button onClick={handleChangee}> Add Expense </Button>
-        <Button onClick={handleChange2}> User Expenses </Button>
-      </Box>
-    </Container>
+      <DashBoard/>
+  </Container>
   );
 }
 

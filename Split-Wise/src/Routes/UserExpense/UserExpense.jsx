@@ -1,11 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { Box, Button, Container, Paper, Typography } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
+import { useNavigate } from "react-router-dom";
 
 export default function UserExpense() {
+  const navigate=useNavigate();
   const [expensesData, setExpensesData] = useState([]);
+  const [selectedExpenseId, setSelectedExpenseId] = useState(null);
+  const [selectedExpenseSummary, setSelectedExpenseSummary] = useState([]);
   const db = getFirestore(app);
+  useEffect(()=>{
+    handleGenerateExpenses();
+  },[])
+  console.log(selectedExpenseId);
+  const handleClick=()=>{
+    navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
+  };
   const handleGenerateExpenses = async () => {
     try {
       const expensesCollection = collection(db, "expensesTest");
@@ -26,30 +37,86 @@ export default function UserExpense() {
     } catch (error) {
       console.error("Error fetching expenses:", error.message);
     }
+  };  
+  const handleExpenseDetails = (expense) => {
+    const { User_Order, Creator_email, User_Contribution, Participants } =
+      expense;
+    const expenses = [...Participants];
+    expenses.push({
+      email: Creator_email,
+      Payed: User_Contribution,
+      Order: User_Order,
+    });
+
+    const balances = {};
+    expenses.forEach((expense) => {
+      if (!balances[expense.email]) {
+        balances[expense.email] = 0;
+      }
+      balances[expense.email] += expense.Payed - expense.Order;
+    });
+
+    const debts = [];
+    const credits = [];
+
+    for (const email in balances) {
+      if (balances[email] < 0) {
+        debts.push({ email, amount: balances[email] });
+      } else if (balances[email] > 0) {
+        credits.push({ email, amount: balances[email] });
+      }
+    }
+
+    const transactions = [];
+
+    while (credits.length > 0 && debts.length > 0) {
+      const credit = credits[0];
+      const debt = debts[0];
+      const x = Math.min(credit.amount, -debt.amount);
+
+      transactions.push({
+        debtor: debt.email,
+        creditor: credit.email,
+        amount: x,
+      });
+
+      credit.amount -= x;
+      debt.amount += x;
+
+      if (credit.amount === 0) {
+        credits.shift();
+      }
+
+      if (debt.amount === 0) {
+        debts.shift();
+      }
+    }
+
+    return transactions;
   };
-  
+  const handletransaction = (expense) => {
+    const transactions = handleExpenseDetails(expense);
+    setSelectedExpenseSummary(transactions);
+    setSelectedExpenseId(expense.id);
+  };
   return (
     <Container maxWidth="md">
-      <Box mt={2} mb={2}>
-        <Button
-          variant="outlined"
-          color="primary"
-          onClick={handleGenerateExpenses}
-        >
-          Generate Expenses
-        </Button>
-      </Box>
+      <Box display="flex" justifyContent="space-between">
       <Typography
         variant="h5"
         gutterBottom
-        sx={{ mt: 5, mb: 5, fontWeight: "bold" }}
+        sx={{ mt: 2, mb: 2, fontWeight: "bold" }}
       >
-        {auth.currentUser.displayName} Expenses:
+        {auth.currentUser.displayName ? auth.currentUser.displayName : "User" }'s Expenses:
       </Typography>
+      <Button variant="outlined" onClick={handleClick} sx={{ mb: 2 }}>
+        Add Expense
+      </Button>
+      </Box>
       {expensesData.length === 0 ? (
         <Typography variant="body1"> No expenses to display. </Typography>
       ) : (
-        <Box display="flex" flexDirection="column">
+        <Box display="flex" flexDirection="column" sx={{mt:2}}>
           {expensesData.map((expense) => (
             <Paper
               key={expense.id}
@@ -70,7 +137,27 @@ export default function UserExpense() {
               >
                 View Report
               </Button>
-             </Paper>
+              {selectedExpenseSummary.length > 0 &&
+                selectedExpenseId === expense.id && (
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      sx={{ mt: 3, mb: 3, fontWeight: "bold" }}
+                    >
+                      {" "}
+                      Expense Summary:
+                    </Typography>
+                    <ul>
+                      {selectedExpenseSummary.map((transaction, index) => (
+                        <li key={index}>
+                          {transaction.debtor} <b>owes</b> {transaction.creditor} <b>$
+                          {transaction.amount}</b>
+                        </li>
+                      ))}
+                    </ul>
+                  </Box>
+                )}
+            </Paper>
           ))}
         </Box>
       )}
