@@ -108,7 +108,7 @@ export default function SignUpForm() {
           <Typography component="span" variant="body2"> Already have an account ? </Typography>
               <Typography 
               component={Link}
-              to="/user/SignIn"
+              to="/user/signin"
               variant="body2"
               sx={{ color: "#333"}}
               >

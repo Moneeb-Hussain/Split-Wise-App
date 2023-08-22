@@ -9,27 +9,29 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, redirect, useLocation, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/Firebase";
 import { signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const drawerWidth = 240;
 function NavBar(props) {
   const { window } = props;
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userauth, setUserAuth] = useState(false);
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
-        navigate("/SignIn");
+        navigate("/user/signin");
       })
       .catch((error) => {
-        console.log(error.message);
+        toast.error("Error Navigating to desired path");
       });
-  }; 
-    useEffect(()=>{
+  };
+  useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
         setUserAuth(true);
@@ -37,7 +39,7 @@ function NavBar(props) {
         setUserAuth(false);
       }
     });
-  },[auth])
+  }, [auth]);
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
@@ -61,14 +63,14 @@ function NavBar(props) {
       <Box sx={{ display: { xs: "block", sm: "none" } }}>
         <ListItemButton
           component={Link}
-          to="/user/SignUp"
+          to="/user/signup"
           sx={{ color: "#333", mt: "30px", mb: "16px" }}
         >
           <Typography component="span">SIGN UP</Typography>
         </ListItemButton>
         <ListItemButton
           component={Link}
-          to="/user/SignIn"
+          to="/user/signin"
           sx={{ color: "#333" }}
         >
           <Typography component="span">SIGN IN</Typography>
@@ -93,45 +95,57 @@ function NavBar(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            variant="body1"
-            component={Link}
-            to="/"
-            sx={{
-              flexGrow: 1,
-              color: "#fff",
-              display: { xs: "none", sm: "block" },
-              textDecoration: "none",
-            }}
-          >
-            ExpenseSync
-          </Typography>
+          {userauth ? (
+            <Typography
+              variant="body1"
+              sx={{
+                flexGrow: 1,
+                display: { xs: "none", sm: "block" },
+                fontSize: { sm: "18px" },
+              }}
+            >
+              ExpenseSync
+            </Typography>
+          ) : (
+            <Typography
+              variant="body1"
+              component={Link}
+              to="/"
+              sx={{
+                flexGrow: 1,
+                color: "#fff",
+                display: { xs: "none", sm: "block" },
+                fontSize: { sm: "18px" },
+                textDecoration: "none",
+              }}
+            >
+              ExpenseSync
+            </Typography>
+          )}
           <Box sx={{ display: { xs: "none", sm: "flex" } }}>
             {userauth ? (
               <ListItemButton
-                  component={Button}
-                  onClick={handleLogout}
-                  sx={{ color: "#fff" }}
-                >
-                  <Typography component="span">SIGN OUT
-                  </Typography>
-                </ListItemButton>
+                component={Button}
+                onClick={handleLogout}
+                sx={{ color: "#fff" }}
+              >
+                <Typography component="span">SIGN OUT</Typography>
+              </ListItemButton>
             ) : (
               <>
                 <ListItemButton
                   component={Link}
-                  to="/user/SignUp"
+                  to="/user/signup"
                   sx={{ color: "#fff", mr: "16px" }}
                 >
                   <Typography component="span">SIGN UP</Typography>
                 </ListItemButton>
                 <ListItemButton
                   component={Link}
-                  to="/user/SignIn"
+                  to="/user/signin"
                   sx={{ color: "#fff" }}
                 >
-                  <Typography component="span">SIGN IN
-                  </Typography>
+                  <Typography component="span">SIGN IN</Typography>
                 </ListItemButton>
               </>
             )}
