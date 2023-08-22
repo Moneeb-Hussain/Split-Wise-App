@@ -9,10 +9,9 @@ import {
 } from "@mui/material";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Firebase/Firebase";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignInForm() {
-  const [authe, setauth] = useOutletContext()
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
@@ -28,7 +27,6 @@ export default function SignInForm() {
       .then(async (response) => {
         const user = response.user;
         setSubmitButtonDisabled(false);
-        setauth(true)
         navigate(`/user/${user.uid}`)
       })
       .catch((error) => {

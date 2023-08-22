@@ -1,9 +1,56 @@
-import React from 'react'
+import * as React from "react";
+import {
+  Box,
+  Tabs,
+  Tab,
+  Typography,
+  Container,
+  TextField,
+  Button,
+} from "@mui/material";
+import { auth } from "../../Firebase/Firebase";
+import Home from "../Home/Home";
+import { Link, useNavigate } from "react-router-dom";
 
-export default function UserDashBoard() {
+function UserDashboard() {
+  const navigate = useNavigate();
+  console.log(auth.currentUser.uid);
+  const [value, setValue] = React.useState("two"); // Initial selected tab value
+  const handleChange = (event, newValue) => {
+    setValue(newValue); // Update the selected tab value
+  };
+  const handleChangee = () => {
+    navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
+  };
+  const handleChange2=()=>{
+    navigate(`/user/${auth.currentUser.uid}/User-Expenses`);
+  };
   return (
-    <div>
-      Hey
-    </div>
-  )
+    <Container>
+      <Typography variant="h6" align="center">
+        User Dashboard
+      </Typography>
+      <Box sx={{ width: "100%", mt: "50px" }}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          textColor="secondary"
+          indicatorColor="secondary"
+          aria-label="secondary tabs example"
+        >
+          <Tab
+            value="one"
+            component={Link}
+            to="/user/:uid/Add-Expense"
+            label="Add Expense"
+          />
+          <Tab value="two" label="Add Friend" />
+        </Tabs>
+        <Button onClick={handleChangee}> Add Expense </Button>
+        <Button onClick={handleChange2}> User Expenses </Button>
+      </Box>
+    </Container>
+  );
 }
+
+export default UserDashboard;

@@ -38,7 +38,7 @@ export default function SignUpForm() {
           userName: formState.userName,
           email: formState.email,
         });
-        navigate(`/${user.uid}`);
+        navigate(`/user/${user.uid}`);
       })
       .catch((error) => {
         setSubmitButtonDisabled(false);

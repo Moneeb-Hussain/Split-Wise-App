@@ -1,11 +1,22 @@
-import { Navigate, Outlet, useOutletContext } from "react-router-dom";
+import {Outlet, useNavigate, useOutletContext } from "react-router-dom";
+import { auth } from '../../Firebase/Firebase';
+import { useEffect, useState } from "react";
 
 function ProtectedRuote() {
-  const [authe, setauth] = useOutletContext()
-
+    const navigate =useNavigate()
+    const [userAuth, setuserAuth] = useState(false)
+    useEffect(() => {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+            setuserAuth(true)
+        } else {
+        navigate("/SignIn")
+        }
+      });
+  }, []);
   return (
     <>
-      {authe ? <Outlet /> : <Navigate to="/SignIn" />}
+     {userAuth && <Outlet/>}
     </>
   );
 }
