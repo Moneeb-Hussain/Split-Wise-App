@@ -8,21 +8,25 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app, auth } from "../../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
 import AddParticipant from "../../Components/AddParticipant/AddParticipant";
 import { toast } from "react-toastify";
+import { v4 } from "uuid";
 
 export default function AddExpense() {
   const [participants, setParticipants] = useState([]);
   const [participantsExpenses, setParticipantsExpenses] = useState([]);
   const [addButtonDisabled, setAddButtonDisabled] = useState(true);
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const totalBillRef = useRef(0);
-  const userContributionRef=useRef(0)
-  const userOrderRef=useRef(0)
+  const userContributionRef = useRef(0);
+  const userOrderRef = useRef(0);
   const db = getFirestore(app);
+  const storage = getStorage(app);
   const handleInputValidation = (e) => {
     e.target.value = Math.max(0, e.target.value);
   };
@@ -69,6 +73,20 @@ export default function AddExpense() {
         "Orders Sum and Contributions Sum must be equal to Total Bill"
       );
       return;
+    }
+    setSubmitButtonDisabled(true);
+    const imageFile = data.get("image");
+    let imageUrl = null;
+    if (imageFile && imageFile.size > 0) {
+      const imageRef = ref(
+        storage,
+        `images/${auth.currentUser.uid}/${imageFile.name + v4()}`
+      );
+      await uploadBytes(imageRef, imageFile);
+      imageUrl = await getDownloadURL(imageRef);
+    }
+    if (imageFile && imageFile.size > 0) {
+      expenseData.ImageUrl = imageUrl;
     }
     const expensesCollection = collection(db, "expenses");
     const addedExpenseRef = await addDoc(expensesCollection, expenseData);
@@ -141,6 +159,16 @@ export default function AddExpense() {
               required
             />
           </Grid>
+          <Grid item xs={12}>
+            <TextField
+              type="file"
+              accept="image/*"
+              name="image"
+              id="image"
+              fullWidth
+            />
+          </Grid>
+
           <Grid item xs={12} sx={{ paddingLeft: "0px" }}>
             <AddParticipant
               participants={participants}
@@ -157,6 +185,7 @@ export default function AddExpense() {
           <Button
             type="submit"
             variant="contained"
+            disabled={submitButtonDisabled}
             sx={{ mt: 3, mb: 2, ml: 2 }}
           >
             Add Expense

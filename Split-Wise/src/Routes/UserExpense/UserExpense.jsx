@@ -11,7 +11,7 @@ export default function UserExpense() {
   const navigate = useNavigate();
   const [expensesData, setExpensesData] = useState([]);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
-  const [expenseSummary,setExpenseSummary]=useState([])
+  const [expenseSummary, setExpenseSummary] = useState([]);
   const [selectedExpenseSummary, setSelectedExpenseSummary] = useState([]);
   const [loading, setLoading] = useState(true);
   const db = getFirestore(app);
@@ -98,6 +98,22 @@ export default function UserExpense() {
               <Typography variant="body1" gutterBottom>
                 Date: {expense.Date}
               </Typography>
+              {expense.ImageUrl && (
+                <Box
+                  maxWidth="20%"
+                  mt={2}
+                  mb={2}
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                >
+                  <img
+                    src={expense.ImageUrl}
+                    alt="Expense"
+                    style={{ width: "100%", height: "auto" }}
+                  />
+                </Box>
+              )}
               <Button
                 sx={{ mt: 3, mb: 1 }}
                 variant="outlined"

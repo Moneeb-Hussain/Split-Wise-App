@@ -54,7 +54,7 @@ export default function DashBoard() {
           expenseData.creatorEmail === transaction.creditor
         ) {
           let updatedCreatorEmail = expenseData.creatorEmail;
-          updatedCreatorEmail == "a";
+          updatedCreatorEmail = "a";
           const updatedParticipants = expenseData.Participants.filter(
             (element) =>
               element.email !== transaction.debtor &&
