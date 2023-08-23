@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
-import { Box, Button, Typography, Skeleton } from "@mui/material";
+import { Button, Typography, Skeleton } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { Card, CardContent } from "@mui/material";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { calculateTransactions } from "../../Utilities/transactionUtils";
 import { toast } from "react-toastify";
 import ExpenseSkeleton from "../../Components/Skeleton/Skeleton";
+
 export default function DashBoard() {
   const db = getFirestore(app);
   const [expenses, setExpenses] = useState([]);
@@ -17,8 +18,6 @@ export default function DashBoard() {
     try {
       const expensesCollection = collection(db, "expenses");
       const querySnapshot = await getDocs(expensesCollection);
-      console.log(querySnapshot);
-      console.log(querySnapshot.docs);
       const expensesData = querySnapshot.docs.map((element) => ({
         id: element.id,
         ...element.data(),
@@ -30,6 +29,19 @@ export default function DashBoard() {
             expense.Participants.some(
               (Participant) => Participant.email === auth.currentUser?.email
             ))
+      );
+      await Promise.all(
+        userExpenses.map(async (expense) => {
+          if (!expense.Transactions) {
+            const transactions = calculateTransactions(expense);
+            const expenseRef = doc(db, "expenses", expense.id);
+            try {
+              await updateDoc(expenseRef, { Transactions: transactions });
+            } catch (error) {
+              toast.error("Error updating expense document:", error);
+            }
+          }
+        })
       );
       setExpenses(userExpenses);
       setLoading(false);
@@ -46,59 +58,55 @@ export default function DashBoard() {
   const handleSettleClick = async (transaction) => {
     try {
       const expenseRef = doc(db, "expenses", transaction.expenseId);
-      const expenseSnapshot = await getDoc(expenseRef);
-      if (expenseSnapshot.exists()) {
-        const expenseData = expenseSnapshot.data();
-        if (
-          expenseData.creatorEmail === transaction.debtor ||
-          expenseData.creatorEmail === transaction.creditor
-        ) {
-          let updatedCreatorEmail = expenseData.creatorEmail;
-          updatedCreatorEmail = "a";
-          const updatedParticipants = expenseData.Participants.filter(
-            (element) =>
-              element.email !== transaction.debtor &&
-              element.email !== transaction.creditor
-          );
-          const updatedExpenseData = {
-            ...expenseData,
-            creatorEmail: updatedCreatorEmail,
-            Participants: updatedParticipants,
-          };
-          await updateDoc(expenseRef, updatedExpenseData);
-          await fetchExpenses();
-          console.log("Transaction settled and database updated.");
-        } else {
-          const updatedParticipants = expenseData.Participants.filter(
-            (participant) =>
-              participant.email !== transaction.debtor &&
-              participant.email !== transaction.creditor
-          );
-          const updatedExpenseData = {
-            ...expenseData,
-            Participants: updatedParticipants,
-          };
-          await updateDoc(expenseRef, updatedExpenseData);
-          await fetchExpenses();
-        }
+      const expenseDoc = await getDoc(expenseRef);
+      if (expenseDoc.exists()) {
+        const expenseData = expenseDoc.data();
+        const updatedTransactions = expenseData.Transactions.filter(
+          (element) =>
+            element.amount !== transaction.amount ||
+            element.debtor !== transaction.debtor ||
+            element.creditor !== transaction.creditor
+        );
+        await updateDoc(expenseRef, { Transactions: updatedTransactions });
+        const updatedExpenses = expenses.map((expense) => {
+          if (expense.id === transaction.expenseId) {
+            return {
+              ...expense,
+              Transactions: updatedTransactions,
+            };
+          }
+          return expense;
+        });
+        setExpenses(updatedExpenses);
       }
     } catch (error) {
-      toast.error("Error Settling Transaction");
+      toast.error("Error removing transaction:", error);
     }
   };
 
-  const allTransactions = [];
-  for (const expense of expenses) {
-    const transactions = calculateTransactions(expense);
-    allTransactions.push(...transactions);
-  }
-  const userDebts = allTransactions.filter(
-    (transaction) => transaction.debtor === currentUserEmail
-  );
-
-  const userCredits = allTransactions.filter(
-    (transaction) => transaction.creditor === currentUserEmail
-  );
+  const debts = [];
+  const credits = [];
+  expenses.forEach((expense) => {
+    const transactions = expense.Transactions || [];
+    transactions.forEach((transaction) => {
+      if (transaction.debtor === currentUserEmail) {
+        debts.push({
+          amount: transaction.amount,
+          creditor: transaction.creditor,
+          debtor: transaction.debtor,
+          expenseId: transaction.expenseId,
+        });
+      }
+      if (transaction.creditor === currentUserEmail) {
+        credits.push({
+          amount: transaction.amount,
+          debtor: transaction.debtor,
+          creditor: transaction.creditor,
+          expenseId: transaction.expenseId,
+        });
+      }
+    });
+  });
   return (
     <>
       {loading ? (
@@ -114,7 +122,7 @@ export default function DashBoard() {
               Transactions where you owe:
             </Typography>
             <ul>
-              {userDebts.map((transaction, index) => (
+              {debts.map((transaction, index) => (
                 <React.Fragment key={index}>
                   <li
                     style={{
@@ -157,7 +165,7 @@ export default function DashBoard() {
               Transactions where you are owed:
             </Typography>
             <ul>
-              {userCredits.map((transaction, index) => (
+              {credits.map((transaction, index) => (
                 <li
                   key={index}
                   style={{
