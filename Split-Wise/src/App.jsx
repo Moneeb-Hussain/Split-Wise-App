@@ -1,35 +1,71 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect, useState } from "react";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Home from "./Routes/Home/Home";
+import Root from "./Components/Root/Root";
+import SignUp from "./Routes/SignUp/SignUp";
+import SignIn from "./Routes/SignIn/SignIn";
+import UserDashBoard from "./Routes/UserDashBoard/UserDashBoard";
+import ProtectedRuote from "./Routes/ProtectedRoute/ProtectedRoute";
+import AddExpense from "./Routes/AddExpense/AddExpense";
+import UserExpense from "./Routes/UserExpense/UserExpense";
+import { auth } from "./Firebase/Firebase";
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App(){
+const [userauth, setUserAuth] = useState(false);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+useEffect(() => {
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      setUserAuth(true);
+    } else {
+      setUserAuth(false);
+    }
+  });
+}, [auth]);
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    children: [
+      {
+        path: "/",
+        element: userauth? <UserDashBoard />: <Home />,
+      },
+      {
+        path: '/',
+        element: <ProtectedRuote />,
+        children: [
+          {
+            path: "user/:uid",
+            element: <UserDashBoard />,
+          },
+          {
+            path: "/user/:uid/Add-Expense",
+            element: <AddExpense />,
+          },
+          {
+            path: "/user/:uid/User-Expenses",
+            element: <UserExpense />,
+          },
+        ]
+      },
+      {
+        path: "/user/signup",
+        element: userauth? <UserDashBoard />:<SignUp />,
+      },
+      {
+        path: "/user/signin",
+        element: userauth? <UserDashBoard />: <SignIn />,
+      },
+      {
+        path: "*",
+        element: userauth? <UserDashBoard />:<SignIn />
+      }
+    ],
+  },
+]);
+return(
+    <RouterProvider router={router} />
+)
 }
-
-export default App

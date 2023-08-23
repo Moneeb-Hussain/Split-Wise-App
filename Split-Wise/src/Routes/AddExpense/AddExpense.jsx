@@ -89,11 +89,11 @@ export default function AddExpense() {
       expenseData.ImageUrl = imageUrl;
     }
     const expensesCollection = collection(db, "expenses");
-    const addedExpenseRef = await addDoc(expensesCollection, expenseData);
+    await addDoc(expensesCollection, expenseData);
     toast.success("Expense Added Successfully");
-    navigate(`/user/${auth.currentUser.uid}`);
     event.target.reset();
     setParticipantsExpenses([]);
+    navigate(`/user/${auth.currentUser.uid}`);
     setErrorMessage("");
   };
 

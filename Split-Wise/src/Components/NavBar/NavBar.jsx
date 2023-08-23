@@ -9,7 +9,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { Link, redirect, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/Firebase";
 import { signOut } from "firebase/auth";
 import React, { useEffect, useState } from "react";
@@ -19,7 +19,6 @@ const drawerWidth = 240;
 function NavBar(props) {
   const { window } = props;
   const navigate = useNavigate();
-  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userauth, setUserAuth] = useState(false);
   const handleLogout = () => {

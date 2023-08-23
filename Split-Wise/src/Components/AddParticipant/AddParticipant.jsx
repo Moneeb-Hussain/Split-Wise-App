@@ -26,7 +26,9 @@ export default function AddParticipant({
   setParticipantsExpenses,
   totalBill,
   handleInputValidation,
-}) {
+}) 
+
+{
   const db = getFirestore(app);
   const participantBillRef = useRef(0);
   const participantOrderRef = useRef(0);
@@ -46,10 +48,12 @@ export default function AddParticipant({
     }));
     setParticipants(participantsData);
   }
+
   const onSelectParticipant = (participantId) => {
     setSelectedParticipant(participantId);
     setInputFieldsVisible(true);
   };
+
   const handleClick = () => {
     const participantEmail = participantEmailRef.current;
     const participantExpense = participantBillRef.current;
@@ -105,6 +109,7 @@ export default function AddParticipant({
     if (participantOrder) participantOrder.value = "";
     if (participantExpense) participantExpense.value = "";
   };
+  
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>

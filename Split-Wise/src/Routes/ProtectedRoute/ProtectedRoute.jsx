@@ -1,4 +1,4 @@
-import {Outlet, useNavigate, useOutletContext } from "react-router-dom";
+import {Outlet, useNavigate } from "react-router-dom";
 import { auth } from '../../Firebase/Firebase';
 import { useEffect, useState } from "react";
 

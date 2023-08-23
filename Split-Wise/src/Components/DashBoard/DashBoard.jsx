@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
-import { Button, Typography, Skeleton } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { Card, CardContent } from "@mui/material";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { calculateTransactions } from "../../Utilities/transactionUtils";
 import { toast } from "react-toastify";
 import ExpenseSkeleton from "../../Components/Skeleton/Skeleton";
+import { calculateCredits } from "../../Utilities/settlementUtils/creditsUtils";
+import { calculateDebts } from "../../Utilities/settlementUtils/debtsUtils";
 
 export default function DashBoard() {
   const db = getFirestore(app);
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const currentUserEmail = auth.currentUser.email;
 
   const fetchExpenses = async () => {
@@ -56,6 +59,7 @@ export default function DashBoard() {
   }, []);
 
   const handleSettleClick = async (transaction) => {
+    setSubmitButtonDisabled(true)
     try {
       const expenseRef = doc(db, "expenses", transaction.expenseId);
       const expenseDoc = await getDoc(expenseRef);
@@ -78,35 +82,17 @@ export default function DashBoard() {
           return expense;
         });
         setExpenses(updatedExpenses);
+        setSubmitButtonDisabled(false)
       }
     } catch (error) {
+      setSubmitButtonDisabled(false)
       toast.error("Error removing transaction:", error);
     }
   };
 
-  const debts = [];
-  const credits = [];
-  expenses.forEach((expense) => {
-    const transactions = expense.Transactions || [];
-    transactions.forEach((transaction) => {
-      if (transaction.debtor === currentUserEmail) {
-        debts.push({
-          amount: transaction.amount,
-          creditor: transaction.creditor,
-          debtor: transaction.debtor,
-          expenseId: transaction.expenseId,
-        });
-      }
-      if (transaction.creditor === currentUserEmail) {
-        credits.push({
-          amount: transaction.amount,
-          debtor: transaction.debtor,
-          creditor: transaction.creditor,
-          expenseId: transaction.expenseId,
-        });
-      }
-    });
-  });
+  const debts = calculateDebts(expenses, currentUserEmail);
+  const credits = calculateCredits(expenses, currentUserEmail);
+
   return (
     <>
       {loading ? (
@@ -138,6 +124,7 @@ export default function DashBoard() {
                     </span>
                     <Button
                       variant="contained"
+                      disabled={submitButtonDisabled}
                       color="primary"
                       size="small"
                       onClick={() => handleSettleClick(transaction)}

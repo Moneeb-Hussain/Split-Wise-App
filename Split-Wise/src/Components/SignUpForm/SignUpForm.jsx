@@ -26,6 +26,10 @@ export default function SignUpForm() {
       email: data.get("email"),
       password: data.get("password"),
     };
+    if (formState.password.length < 6) {
+      setError("Password should be at least 6 characters");
+      return;
+    }  
     setSubmitButtonDisabled(true);
     createUserWithEmailAndPassword(auth, formState.email, formState.password)
       .then(async (response) => {
@@ -42,8 +46,14 @@ export default function SignUpForm() {
         navigate(`/user/${user.uid}`);
       })
       .catch((error) => {
+        console.log(error.message);
+        if(error.message.includes("auth/invalid-email")){
+          setError("Invalid Email")
+        }
+        else if(error.message.includes("auth/email-already-in-use")){
+          setError("Email already in use")
+        }
         setSubmitButtonDisabled(false);
-        setError(error.message);
       });
   };
 

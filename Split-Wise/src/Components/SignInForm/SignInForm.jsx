@@ -22,6 +22,10 @@ export default function SignInForm() {
       email: data.get("email"),
       password: data.get("password"),
     };
+    if (!formState.email.includes(".com")) {
+      setError("Please enter a valid email address.");
+      return;
+    }
     setSubmitButtonDisabled(true);
     signInWithEmailAndPassword(auth, formState.email, formState.password)
       .then(async (response) => {
@@ -30,8 +34,13 @@ export default function SignInForm() {
         navigate(`/user/${user.uid}`);
       })
       .catch((error) => {
+        if(error.message.includes("auth/wrong-password")){
+          setError("Wrong Email/Password");
+        }
+        else if(error.message.includes("auth/user-not-found")){
+          setError("Email doesn't exist")
+        }
         setSubmitButtonDisabled(false);
-        setError(error.message);
       });
   };
   return (

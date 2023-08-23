@@ -38,11 +38,14 @@ export default function UserExpense() {
       }));
       const userExpenses = expenses.filter(
         (expense) =>
-          expense.creatorEmail === auth.currentUser.email ||
+          (expense.creatorEmail === auth.currentUser.email ||
           (expense.Participants &&
             expense.Participants.some(
               (Participant) => Participant.email === auth.currentUser?.email
-            ))
+            ))) &&
+            (
+             (!expense.Transactions) || (expense.Transactions.length>0)
+            )
       );
       setLoading(false);
       setExpensesData(userExpenses);
