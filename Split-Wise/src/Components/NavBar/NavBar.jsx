@@ -24,7 +24,7 @@ function NavBar(props) {
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
-        navigate("/user/signin");
+        navigate("/signin");
       })
       .catch((error) => {
         toast.error("Error Navigating to desired path");
@@ -62,14 +62,14 @@ function NavBar(props) {
       <Box sx={{ display: { xs: "block", sm: "none" } }}>
         <ListItemButton
           component={Link}
-          to="/user/signup"
+          to="/signup"
           sx={{ color: "#333", mt: "30px", mb: "16px" }}
         >
           <Typography component="span">SIGN UP</Typography>
         </ListItemButton>
         <ListItemButton
           component={Link}
-          to="/user/signin"
+          to="/signin"
           sx={{ color: "#333" }}
         >
           <Typography component="span">SIGN IN</Typography>
@@ -134,14 +134,14 @@ function NavBar(props) {
               <>
                 <ListItemButton
                   component={Link}
-                  to="/user/signup"
+                  to="/signup"
                   sx={{ color: "#fff", mr: "16px" }}
                 >
                   <Typography component="span">SIGN UP</Typography>
                 </ListItemButton>
                 <ListItemButton
                   component={Link}
-                  to="/user/signin"
+                  to="signin"
                   sx={{ color: "#fff" }}
                 >
                   <Typography component="span">SIGN IN</Typography>

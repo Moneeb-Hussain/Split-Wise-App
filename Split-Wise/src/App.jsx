@@ -37,25 +37,25 @@ const router = createBrowserRouter([
         element: <ProtectedRuote />,
         children: [
           {
-            path: "user/:uid",
+            path: "/:uid",
             element: <UserDashBoard />,
           },
           {
-            path: "/user/:uid/Add-Expense",
+            path: "/:uid/add-expense",
             element: <AddExpense />,
           },
           {
-            path: "/user/:uid/User-Expenses",
+            path: "/:uid/user-expenses",
             element: <UserExpense />,
           },
         ]
       },
       {
-        path: "/user/signup",
+        path: "signup",
         element: userauth? <UserDashBoard />:<SignUp />,
       },
       {
-        path: "/user/signin",
+        path: "signin",
         element: userauth? <UserDashBoard />: <SignIn />,
       },
       {

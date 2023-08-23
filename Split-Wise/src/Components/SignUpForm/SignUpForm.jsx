@@ -8,9 +8,10 @@ import {
   Typography,
 } from "@mui/material";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDoc, doc, query, where, getDocs, setDoc, updateDoc, arrayUnion } from "firebase/firestore"
+import { getFirestore, collection, doc, setDoc } from "firebase/firestore"
 import { auth,app } from "../../Firebase/Firebase";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function SignUpForm() {
   const db = getFirestore(app)
@@ -43,10 +44,10 @@ export default function SignUpForm() {
           userName: formState.userName,
           email: formState.email,
         });
-        navigate(`/user/${user.uid}`);
+        toast.success("Signed Up Successfully")
+        navigate(`/${user.uid}`);
       })
       .catch((error) => {
-        console.log(error.message);
         if(error.message.includes("auth/invalid-email")){
           setError("Invalid Email")
         }
@@ -118,7 +119,7 @@ export default function SignUpForm() {
           <Typography component="span" variant="body2"> Already have an account ? </Typography>
               <Typography 
               component={Link}
-              to="/user/signin"
+              to="/signin"
               variant="body2"
               sx={{ color: "#333"}}
               >

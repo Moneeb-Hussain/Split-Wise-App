@@ -21,11 +21,11 @@ export default function UserExpense() {
   }, []);
 
   const handleClick = () => {
-    navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
+    navigate(`/${auth.currentUser.uid}/add-expense`);
   };
 
   const handleNavigation = () => {
-    navigate(`/user/${auth.currentUser.uid}`);
+    navigate(`/${auth.currentUser.uid}`);
   };
 
   const handleGenerateExpenses = async () => {

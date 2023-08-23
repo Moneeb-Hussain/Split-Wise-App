@@ -26,9 +26,7 @@ export default function AddParticipant({
   setParticipantsExpenses,
   totalBill,
   handleInputValidation,
-}) 
-
-{
+}) {
   const db = getFirestore(app);
   const participantBillRef = useRef(0);
   const participantOrderRef = useRef(0);
@@ -77,13 +75,13 @@ export default function AddParticipant({
         totalOrders += element.Order;
       }
       if (
-        (totalContributions +
+        totalContributions +
           parseFloat(participantExpense.value) +
-          parseFloat(userContribution.value || 0)) >
+          parseFloat(userContribution.value || 0) >
           totalBill.value ||
-        (totalOrders +
+        totalOrders +
           parseFloat(participantOrder.value) +
-          parseFloat(userOrder.value || 0) )>
+          parseFloat(userOrder.value || 0) >
           totalBill.value
       ) {
         toast.error("Total orders or Contributions can't exceed Total Bill");
@@ -109,7 +107,7 @@ export default function AddParticipant({
     if (participantOrder) participantOrder.value = "";
     if (participantExpense) participantExpense.value = "";
   };
-  
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>

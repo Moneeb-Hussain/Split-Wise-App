@@ -74,6 +74,12 @@ export default function AddExpense() {
       );
       return;
     }
+    const currentDate = new Date();
+    const selectedDate = new Date(data.get("date"));
+    if (selectedDate > currentDate) {
+      toast.error("Selected date cannot be in the future");
+      return;
+    }
     setSubmitButtonDisabled(true);
     const imageFile = data.get("image");
     let imageUrl = null;
@@ -93,7 +99,7 @@ export default function AddExpense() {
     toast.success("Expense Added Successfully");
     event.target.reset();
     setParticipantsExpenses([]);
-    navigate(`/user/${auth.currentUser.uid}`);
+    navigate(`/${auth.currentUser.uid}`);
     setErrorMessage("");
   };
 

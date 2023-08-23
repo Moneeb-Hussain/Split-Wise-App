@@ -10,6 +10,7 @@ import {
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Firebase/Firebase";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function SignInForm() {
   const navigate = useNavigate();
@@ -31,7 +32,8 @@ export default function SignInForm() {
       .then(async (response) => {
         const user = response.user;
         setSubmitButtonDisabled(false);
-        navigate(`/user/${user.uid}`);
+        toast.success("Signed In Successfully")
+        navigate(`/${user.uid}`);
       })
       .catch((error) => {
         if(error.message.includes("auth/wrong-password")){
@@ -99,7 +101,7 @@ export default function SignInForm() {
             <Typography
               variant="body2"
               component={Link}
-              to="/user/signup"
+              to="/signup"
               sx={{ color: "#333"}}
             >
               {" "}

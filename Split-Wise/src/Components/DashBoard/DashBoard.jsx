@@ -15,7 +15,7 @@ export default function DashBoard() {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
-  const currentUserEmail = auth.currentUser.email;
+  const currentUserEmail = auth.currentUser?.email;
 
   const fetchExpenses = async () => {
     try {
@@ -59,7 +59,7 @@ export default function DashBoard() {
   }, []);
 
   const handleSettleClick = async (transaction) => {
-    setSubmitButtonDisabled(true)
+    setSubmitButtonDisabled(true);
     try {
       const expenseRef = doc(db, "expenses", transaction.expenseId);
       const expenseDoc = await getDoc(expenseRef);
@@ -82,10 +82,10 @@ export default function DashBoard() {
           return expense;
         });
         setExpenses(updatedExpenses);
-        setSubmitButtonDisabled(false)
+        setSubmitButtonDisabled(false);
       }
     } catch (error) {
-      setSubmitButtonDisabled(false)
+      setSubmitButtonDisabled(false);
       toast.error("Error removing transaction:", error);
     }
   };
