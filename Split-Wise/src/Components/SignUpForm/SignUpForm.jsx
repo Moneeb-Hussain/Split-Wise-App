@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -12,13 +12,12 @@ import { getFirestore, collection, doc, setDoc } from "firebase/firestore"
 import { auth,app } from "../../Firebase/Firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { setUserAuthToken } from "../../Slices/authSlice";
 
 export default function SignUpForm() {
   const db = getFirestore(app)
   const navigate = useNavigate();
-  const userAuthToken = useSelector(state => state.auth.userAuthToken);
   const dispatch = useDispatch();
   const [error, setError] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
@@ -76,7 +75,7 @@ export default function SignUpForm() {
         }}
       >
         <Typography component="h1" variant="h5" sx={{ m: 5 }}>
-          Let's Get Started
+         Let&rsquo;s Get Started
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12}>

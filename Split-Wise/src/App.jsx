@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Home from "./Routes/Home/Home";
 import Root from "./Components/Root/Root";

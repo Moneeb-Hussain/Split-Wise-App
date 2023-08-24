@@ -12,10 +12,11 @@ import Button from "@mui/material/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/Firebase";
 import { signOut } from "firebase/auth";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserAuthToken } from "../../Slices/authSlice";
+import PropTypes from "prop-types"; 
 
 const drawerWidth = 240;
 function NavBar(props) {
@@ -31,7 +32,7 @@ function NavBar(props) {
         dispatch(setUserAuthToken(false));
         navigate("/signin");
       })
-      .catch((error) => {
+      .catch(() => {
         toast.error("Error Navigating to desired path");
       });
   };
@@ -176,3 +177,7 @@ function NavBar(props) {
 }
 
 export default NavBar;
+
+NavBar.propTypes = {
+  window: PropTypes.func,
+};

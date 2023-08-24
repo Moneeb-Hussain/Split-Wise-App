@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import {
   Box,
@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { toast } from "react-toastify";
+import PropTypes from "prop-types";
 
 export default function AddParticipant({
   setParticipants,
@@ -33,6 +34,7 @@ export default function AddParticipant({
   const participantEmailRef = useRef(null);
   const [selectedParticipant, setSelectedParticipant] = useState("");
   const [inputFieldsVisible, setInputFieldsVisible] = useState(false);
+
   useEffect(() => {
     fetchParticipants();
   }, []);
@@ -205,3 +207,15 @@ export default function AddParticipant({
     </Grid>
   );
 }
+
+AddParticipant.propTypes = {
+  setParticipants: PropTypes.func.isRequired,
+  participantsExpenses: PropTypes.array.isRequired,
+  participants: PropTypes.array.isRequired,
+  userContribution: PropTypes.number.isRequired,
+  userOrder: PropTypes.number.isRequired,
+  addButtonDisabled: PropTypes.bool.isRequired,
+  setParticipantsExpenses: PropTypes.func.isRequired,
+  totalBill: PropTypes.number.isRequired,
+  handleInputValidation: PropTypes.func.isRequired,
+};
