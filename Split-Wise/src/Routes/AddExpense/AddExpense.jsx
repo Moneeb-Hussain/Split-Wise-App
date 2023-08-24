@@ -1,3 +1,4 @@
+import AddParticipant from "../../Components/AddParticipant/AddParticipant";
 import { useState, useRef } from "react";
 import { addDoc, collection, getFirestore } from "firebase/firestore";
 import {
@@ -10,10 +11,11 @@ import {
 } from "@mui/material";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app, auth } from "../../Firebase/Firebase";
-import { useNavigate } from "react-router-dom";
-import AddParticipant from "../../Components/AddParticipant/AddParticipant";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { v4 } from "uuid";
+import { calculateTransactions } from "../../Utilities/transactionUtils";
+import { CircularProgress } from "@mui/material";
 
 export default function AddExpense() {
   const [participants, setParticipants] = useState([]);
@@ -21,12 +23,14 @@ export default function AddExpense() {
   const [addButtonDisabled, setAddButtonDisabled] = useState(true);
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
+  const [isAddingExpense, setIsAddingExpense] = useState(false);
   const totalBillRef = useRef(0);
   const userContributionRef = useRef(0);
   const userOrderRef = useRef(0);
   const db = getFirestore(app);
   const storage = getStorage(app);
+  const navigate = useNavigate();
+
   const handleInputValidation = (e) => {
     e.target.value = Math.max(0, e.target.value);
   };
@@ -45,13 +49,14 @@ export default function AddExpense() {
       toast.error("Add atleast one participant to split expense");
       return;
     }
+
     const data = new FormData(event.currentTarget);
     const expenseData = {
       Description: data.get("description"),
       Total_Bill: parseFloat(data.get("total_bill")),
       userContribution: parseFloat(data.get("userContribution")),
       userOrder: parseFloat(data.get("userOrder")),
-      creatorEmail: auth.currentUser.email,
+      creatorEmail: auth.currentUser?.email,
       Date: data.get("date"),
       Participants: participantsExpenses,
     };
@@ -74,7 +79,18 @@ export default function AddExpense() {
       );
       return;
     }
+    const currentDate = new Date();
+    const selectedDate = new Date(data.get("date"));
+    if (selectedDate > currentDate) {
+      toast.error("Selected date cannot be in the future");
+      return;
+    }
+    const transactions = calculateTransactions(expenseData);
+    if (transactions.length > 0) {
+      expenseData.Transactions = transactions;
+    }
     setSubmitButtonDisabled(true);
+    setIsAddingExpense(true);
     const imageFile = data.get("image");
     let imageUrl = null;
     if (imageFile && imageFile.size > 0) {
@@ -89,12 +105,18 @@ export default function AddExpense() {
       expenseData.ImageUrl = imageUrl;
     }
     const expensesCollection = collection(db, "expenses");
-    const addedExpenseRef = await addDoc(expensesCollection, expenseData);
+    await addDoc(expensesCollection, expenseData).catch(() => {
+      toast.error("An error occurred while adding the expense");
+      setIsAddingExpense(false);
+      setSubmitButtonDisabled(false);
+    });
     toast.success("Expense Added Successfully");
-    navigate(`/user/${auth.currentUser.uid}`);
+    setSubmitButtonDisabled(false);
     event.target.reset();
+    navigate(`/user/${auth.currentUser.uid}`);
     setParticipantsExpenses([]);
     setErrorMessage("");
+    setIsAddingExpense(false);
   };
 
   return (
@@ -182,13 +204,26 @@ export default function AddExpense() {
               handleInputValidation={handleInputValidation}
             />
           </Grid>
+          {isAddingExpense ? (
+            <CircularProgress sx={{ mt: 2 }} />
+          ) : (
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={submitButtonDisabled}
+              sx={{ mt: 3, mb: 2, ml: 2 }}
+            >
+              Add Expense
+            </Button>
+          )}
           <Button
-            type="submit"
-            variant="contained"
+            component={Link}
+            to={`/${auth.currentUser?.uid}`}
+            variant="outlined"
             disabled={submitButtonDisabled}
             sx={{ mt: 3, mb: 2, ml: 2 }}
           >
-            Add Expense
+            DashBoard
           </Button>
         </Grid>
       </Box>

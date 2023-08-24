@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from "react";
+import ExpenseSkeleton from "../../Components/Skeleton/Skeleton";
+import { useEffect, useState } from "react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { Box, Button, Container, Paper, Typography } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
 import { calculateTransactions } from "../../Utilities/transactionUtils";
-import { toast } from "react-toastify";
-import ExpenseSkeleton from "../../Components/Skeleton/Skeleton";
 
 export default function UserExpense() {
   const navigate = useNavigate();
   const [expensesData, setExpensesData] = useState([]);
   const [selectedExpenseId, setSelectedExpenseId] = useState(null);
-  const [expenseSummary, setExpenseSummary] = useState([]);
   const [selectedExpenseSummary, setSelectedExpenseSummary] = useState([]);
   const [loading, setLoading] = useState(true);
   const db = getFirestore(app);
@@ -21,11 +19,11 @@ export default function UserExpense() {
   }, []);
 
   const handleClick = () => {
-    navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
+    navigate(`/${auth.currentUser.uid}/add-expense`);
   };
 
   const handleNavigation = () => {
-    navigate(`/user/${auth.currentUser.uid}`);
+    navigate(`/${auth.currentUser.uid}`);
   };
 
   const handleGenerateExpenses = async () => {
@@ -36,19 +34,21 @@ export default function UserExpense() {
         id: element.id,
         ...element.data(),
       }));
+
       const userExpenses = expenses.filter(
         (expense) =>
-          expense.creatorEmail === auth.currentUser.email ||
-          (expense.Participants &&
-            expense.Participants.some(
-              (Participant) => Participant.email === auth.currentUser?.email
-            ))
+          (expense.creatorEmail === auth.currentUser.email ||
+            (expense.Participants &&
+              expense.Participants.some(
+                (Participant) => Participant.email === auth.currentUser?.email
+              ))) &&
+          (!expense.Transactions || expense.Transactions.length > 0)
       );
+
       setLoading(false);
       setExpensesData(userExpenses);
     } catch (error) {
       setLoading(false);
-      toast.error("Error Fetching Expense");
     }
   };
 
@@ -65,8 +65,9 @@ export default function UserExpense() {
           gutterBottom
           sx={{ mt: 2, mb: 2, fontWeight: "bold" }}
         >
-          {auth.currentUser.displayName ? auth.currentUser.displayName : "User"}
-          's Expenses:
+          {auth.currentUser?.displayName
+            ? `${auth.currentUser?.displayName}'s Expenses`
+            : "User's Expenses"}
         </Typography>
         <Box display="flex" flexDirection="column">
           <Button variant="outlined" onClick={handleClick} sx={{ mb: 2 }}>

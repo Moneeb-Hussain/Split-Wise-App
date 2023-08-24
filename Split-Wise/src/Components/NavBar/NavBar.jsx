@@ -9,37 +9,34 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { Link, redirect, useLocation, useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/Firebase";
 import { signOut } from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserAuthToken } from "../../Slices/authSlice";
 
 const drawerWidth = 240;
 function NavBar(props) {
+  const userAuthToken = useSelector((state) => state.auth.userAuthToken);
+  const dispatch = useDispatch();
   const { window } = props;
   const navigate = useNavigate();
-  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [userauth, setUserAuth] = useState(false);
+
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
-        navigate("/user/signin");
+        dispatch(setUserAuthToken(false));
+        navigate("/signin");
       })
-      .catch((error) => {
+      .catch(() => {
         toast.error("Error Navigating to desired path");
       });
   };
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUserAuth(true);
-      } else {
-        setUserAuth(false);
-      }
-    });
-  }, [auth]);
+
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
@@ -63,16 +60,12 @@ function NavBar(props) {
       <Box sx={{ display: { xs: "block", sm: "none" } }}>
         <ListItemButton
           component={Link}
-          to="/user/signup"
+          to="/signup"
           sx={{ color: "#333", mt: "30px", mb: "16px" }}
         >
           <Typography component="span">SIGN UP</Typography>
         </ListItemButton>
-        <ListItemButton
-          component={Link}
-          to="/user/signin"
-          sx={{ color: "#333" }}
-        >
+        <ListItemButton component={Link} to="/signin" sx={{ color: "#333" }}>
           <Typography component="span">SIGN IN</Typography>
         </ListItemButton>
       </Box>
@@ -95,7 +88,7 @@ function NavBar(props) {
           >
             <MenuIcon />
           </IconButton>
-          {userauth ? (
+          {userAuthToken ? (
             <Typography
               variant="body1"
               sx={{
@@ -123,7 +116,7 @@ function NavBar(props) {
             </Typography>
           )}
           <Box sx={{ display: { xs: "none", sm: "flex" } }}>
-            {userauth ? (
+            {userAuthToken ? (
               <ListItemButton
                 component={Button}
                 onClick={handleLogout}
@@ -135,14 +128,14 @@ function NavBar(props) {
               <>
                 <ListItemButton
                   component={Link}
-                  to="/user/signup"
+                  to="/signup"
                   sx={{ color: "#fff", mr: "16px" }}
                 >
                   <Typography component="span">SIGN UP</Typography>
                 </ListItemButton>
                 <ListItemButton
                   component={Link}
-                  to="/user/signin"
+                  to="signin"
                   sx={{ color: "#fff" }}
                 >
                   <Typography component="span">SIGN IN</Typography>
@@ -180,3 +173,7 @@ function NavBar(props) {
 }
 
 export default NavBar;
+
+NavBar.propTypes = {
+  window: PropTypes.func,
+};

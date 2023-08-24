@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import PropTypes from "prop-types";
+import { useEffect, useRef, useState } from "react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import {
   Box,
@@ -33,6 +34,7 @@ export default function AddParticipant({
   const participantEmailRef = useRef(null);
   const [selectedParticipant, setSelectedParticipant] = useState("");
   const [inputFieldsVisible, setInputFieldsVisible] = useState(false);
+
   useEffect(() => {
     fetchParticipants();
   }, []);
@@ -46,10 +48,12 @@ export default function AddParticipant({
     }));
     setParticipants(participantsData);
   }
+
   const onSelectParticipant = (participantId) => {
     setSelectedParticipant(participantId);
     setInputFieldsVisible(true);
   };
+
   const handleClick = () => {
     const participantEmail = participantEmailRef.current;
     const participantExpense = participantBillRef.current;
@@ -73,13 +77,13 @@ export default function AddParticipant({
         totalOrders += element.Order;
       }
       if (
-        (totalContributions +
+        totalContributions +
           parseFloat(participantExpense.value) +
-          parseFloat(userContribution.value || 0)) >
+          parseFloat(userContribution.value || 0) >
           totalBill.value ||
-        (totalOrders +
+        totalOrders +
           parseFloat(participantOrder.value) +
-          parseFloat(userOrder.value || 0) )>
+          parseFloat(userOrder.value || 0) >
           totalBill.value
       ) {
         toast.error("Total orders or Contributions can't exceed Total Bill");
@@ -105,6 +109,7 @@ export default function AddParticipant({
     if (participantOrder) participantOrder.value = "";
     if (participantExpense) participantExpense.value = "";
   };
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -116,7 +121,7 @@ export default function AddParticipant({
           onChange={(e) => onSelectParticipant(e.target.value)}
         >
           {participants.map((element) =>
-            element.email !== auth.currentUser.email ? (
+            element.email !== auth.currentUser?.email ? (
               <MenuItem key={element.id} value={element.email}>
                 {element.email}
               </MenuItem>
@@ -202,3 +207,18 @@ export default function AddParticipant({
     </Grid>
   );
 }
+
+AddParticipant.propTypes = {
+  setParticipants: PropTypes.func.isRequired,
+  participantsExpenses: PropTypes.array.isRequired,
+  participants: PropTypes.array.isRequired,
+  userContribution: PropTypes.oneOfType([PropTypes.number, PropTypes.object])
+    .isRequired,
+  userOrder: PropTypes.oneOfType([PropTypes.number, PropTypes.object])
+    .isRequired,
+  addButtonDisabled: PropTypes.bool.isRequired,
+  setParticipantsExpenses: PropTypes.func.isRequired,
+  totalBill: PropTypes.oneOfType([PropTypes.number, PropTypes.object])
+    .isRequired,
+  handleInputValidation: PropTypes.func.isRequired,
+};

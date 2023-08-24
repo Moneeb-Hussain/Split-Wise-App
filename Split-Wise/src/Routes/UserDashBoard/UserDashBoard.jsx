@@ -1,28 +1,29 @@
-import * as React from "react";
+import DashBoard from "../../Components/DashBoard/DashBoard";
 import {
   Box,
   Typography,
   Container,
-  TextField,
   Button,
 } from "@mui/material";
 import { auth } from "../../Firebase/Firebase";
 import {useNavigate } from "react-router-dom";
-import DashBoard from "../../Components/DashBoard/DashBoard";
 
 function UserDashboard() {
-  let a=10;
+
   const navigate = useNavigate();
+
   const handleAddExpense = () => {
-    navigate(`/user/${auth.currentUser.uid}/Add-Expense`);
+    navigate(`/${auth.currentUser.uid}/add-expense`);
   };
+
   const handleUserExpense=()=>{
-    navigate(`/user/${auth.currentUser.uid}/User-Expenses`);
+    navigate(`/${auth.currentUser.uid}/user-expenses`);
   };
+
   return (
     <Container>
     <Typography variant="h6" align="center" fontWeight="bold" fontSize="23px" >
-      User DashBoard
+      Expense DashBoard
     </Typography>
     <Box
       sx={{
@@ -36,14 +37,14 @@ function UserDashboard() {
         Add Expense
       </Button>
       <Button onClick={handleUserExpense} variant="outlined">
-        User Expenses
+        All Expenses
       </Button>
     </Box>
     <Typography
         variant="body2"
         sx={{ mt: 10, ml: 5, fontSize:"25px"}}
       >
-        {"Welcome"} {auth.currentUser.displayName ? auth.currentUser.displayName+"!": "User!" }
+        {"Welcome"} {auth.currentUser?.displayName ? auth.currentUser?.displayName+"!": "User!" }
       </Typography>
       <DashBoard/>
   </Container>
