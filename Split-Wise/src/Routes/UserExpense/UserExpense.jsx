@@ -1,10 +1,10 @@
+import ExpenseSkeleton from "../../Components/Skeleton/Skeleton";
 import { useEffect, useState } from "react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import { Box, Button, Container, Paper, Typography } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { useNavigate } from "react-router-dom";
 import { calculateTransactions } from "../../Utilities/transactionUtils";
-import ExpenseSkeleton from "../../Components/Skeleton/Skeleton";
 
 export default function UserExpense() {
   const navigate = useNavigate();
@@ -34,6 +34,7 @@ export default function UserExpense() {
         id: element.id,
         ...element.data(),
       }));
+
       const userExpenses = expenses.filter(
         (expense) =>
           (expense.creatorEmail === auth.currentUser.email ||
@@ -43,6 +44,7 @@ export default function UserExpense() {
               ))) &&
           (!expense.Transactions || expense.Transactions.length > 0)
       );
+
       setLoading(false);
       setExpensesData(userExpenses);
     } catch (error) {

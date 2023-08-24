@@ -18,6 +18,7 @@ SplitWise is an application primarily developed to experience effortless expense
 **React Router:** [React Router](https://reactrouter.com/) is a popular routing library for React applications.
 - **Vite:** Modern build tool focused on speed and efficiency for frontend development.
 - **Material-UI:** UI component framework for consistent, high-quality design.
+- **Redux Toolkit:** Redux Toolkit is a powerful library that simplifies the process of managing state in a React application. 
 
 ## Getting Started
 
@@ -66,6 +67,20 @@ To integrate [Firebase](https://firebase.google.com/) into your project, follow 
 
    ```sh
    npm install firebase
+
+
+## Using Redux Toolkit for State Management
+
+Redux Toolkit is a powerful library that simplifies the process of managing state in a React application. It provides utility functions and best practices that make it easier to write and maintain Redux code.
+
+### Installation
+
+To use Redux Toolkit in your Split Wise application, follow these steps:
+
+1. Install Redux Toolkit and other dependencies:
+   
+   ```sh
+   npm install @reduxjs/toolkit react-redux
 
 
 ## Development

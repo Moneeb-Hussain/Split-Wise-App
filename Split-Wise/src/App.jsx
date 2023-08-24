@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Home from "./Routes/Home/Home";
 import Root from "./Components/Root/Root";
 import SignUp from "./Routes/SignUp/SignUp";
@@ -8,6 +6,8 @@ import UserDashBoard from "./Routes/UserDashBoard/UserDashBoard";
 import ProtectedRuote from "./Routes/ProtectedRoute/ProtectedRoute";
 import AddExpense from "./Routes/AddExpense/AddExpense";
 import UserExpense from "./Routes/UserExpense/UserExpense";
+import { useEffect } from "react";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserAuthToken } from "./Slices/authSlice";
 import { auth } from "./Firebase/Firebase";
@@ -67,5 +67,6 @@ export default function App() {
       ],
     },
   ]);
+  
   return <RouterProvider router={router} />;
 }

@@ -1,3 +1,4 @@
+import DashBoard from "../../Components/DashBoard/DashBoard";
 import {
   Box,
   Typography,
@@ -6,7 +7,6 @@ import {
 } from "@mui/material";
 import { auth } from "../../Firebase/Firebase";
 import {useNavigate } from "react-router-dom";
-import DashBoard from "../../Components/DashBoard/DashBoard";
 
 function UserDashboard() {
 

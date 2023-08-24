@@ -8,7 +8,7 @@ export function calculateDebts(expenses, currentUserEmail) {
             amount: transaction.amount,
             creditor: transaction.creditor,
             debtor: transaction.debtor,
-            expenseId: transaction.expenseId,
+            expenseId: expense.id,
           });
         }
       });

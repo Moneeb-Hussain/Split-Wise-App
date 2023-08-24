@@ -9,6 +9,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/Firebase";
 import { signOut } from "firebase/auth";
@@ -16,11 +17,10 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setUserAuthToken } from "../../Slices/authSlice";
-import PropTypes from "prop-types"; 
 
 const drawerWidth = 240;
 function NavBar(props) {
-  const userAuthToken = useSelector(state => state.auth.userAuthToken);
+  const userAuthToken = useSelector((state) => state.auth.userAuthToken);
   const dispatch = useDispatch();
   const { window } = props;
   const navigate = useNavigate();
@@ -65,11 +65,7 @@ function NavBar(props) {
         >
           <Typography component="span">SIGN UP</Typography>
         </ListItemButton>
-        <ListItemButton
-          component={Link}
-          to="/signin"
-          sx={{ color: "#333" }}
-        >
+        <ListItemButton component={Link} to="/signin" sx={{ color: "#333" }}>
           <Typography component="span">SIGN IN</Typography>
         </ListItemButton>
       </Box>

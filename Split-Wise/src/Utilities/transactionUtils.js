@@ -18,7 +18,6 @@ export const calculateTransactions = (expense) => {
 
     const debts = [];
     const credits = [];
-
     for (const email in balances) {
       if (balances[email] < 0) {
         debts.push({ email, amount: balances[email] });
@@ -27,7 +26,6 @@ export const calculateTransactions = (expense) => {
       }
     }
     const transactions = [];
-
     while (credits.length > 0 && debts.length > 0) {
       const credit = credits[0];
       const debt = debts[0];
@@ -36,7 +34,7 @@ export const calculateTransactions = (expense) => {
         debtor: debt.email,
         creditor: credit.email,
         amount: x,
-        expenseId:expense.id,
+        expenseId:expense.id || null,
       });
       credit.amount -= x;
       debt.amount += x;

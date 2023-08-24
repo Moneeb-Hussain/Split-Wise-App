@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { useEffect, useRef, useState } from "react";
 import { collection, getDocs, getFirestore } from "firebase/firestore";
 import {
@@ -15,7 +16,6 @@ import {
 } from "@mui/material";
 import { app, auth } from "../../Firebase/Firebase";
 import { toast } from "react-toastify";
-import PropTypes from "prop-types";
 
 export default function AddParticipant({
   setParticipants,
@@ -212,10 +212,13 @@ AddParticipant.propTypes = {
   setParticipants: PropTypes.func.isRequired,
   participantsExpenses: PropTypes.array.isRequired,
   participants: PropTypes.array.isRequired,
-  userContribution: PropTypes.number.isRequired,
-  userOrder: PropTypes.number.isRequired,
+  userContribution: PropTypes.oneOfType([PropTypes.number, PropTypes.object])
+    .isRequired,
+  userOrder: PropTypes.oneOfType([PropTypes.number, PropTypes.object])
+    .isRequired,
   addButtonDisabled: PropTypes.bool.isRequired,
   setParticipantsExpenses: PropTypes.func.isRequired,
-  totalBill: PropTypes.number.isRequired,
+  totalBill: PropTypes.oneOfType([PropTypes.number, PropTypes.object])
+    .isRequired,
   handleInputValidation: PropTypes.func.isRequired,
 };
