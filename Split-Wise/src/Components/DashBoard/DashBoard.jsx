@@ -50,7 +50,6 @@ export default function DashBoard() {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      toast.error("Error fetching expenses:");
     }
   };
 

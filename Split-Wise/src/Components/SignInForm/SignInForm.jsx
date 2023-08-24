@@ -11,11 +11,15 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Firebase/Firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserAuthToken } from "../../Slices/authSlice";
 
 export default function SignInForm() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
+  const userAuthToken = useSelector(state => state.auth.userAuthToken);
+  const dispatch = useDispatch();
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -33,6 +37,7 @@ export default function SignInForm() {
         const user = response.user;
         setSubmitButtonDisabled(false);
         toast.success("Signed In Successfully")
+        dispatch(setUserAuthToken(true))
         navigate(`/${user.uid}`);
       })
       .catch((error) => {

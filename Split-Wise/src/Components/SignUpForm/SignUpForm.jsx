@@ -12,10 +12,14 @@ import { getFirestore, collection, doc, setDoc } from "firebase/firestore"
 import { auth,app } from "../../Firebase/Firebase";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserAuthToken } from "../../Slices/authSlice";
 
 export default function SignUpForm() {
   const db = getFirestore(app)
   const navigate = useNavigate();
+  const userAuthToken = useSelector(state => state.auth.userAuthToken);
+  const dispatch = useDispatch();
   const [error, setError] = useState("");
   const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
 
@@ -39,13 +43,14 @@ export default function SignUpForm() {
         await updateProfile(user, {
           displayName: formState.userName,
         });
+        dispatch(setUserAuthToken(true))
+        toast.success("Signed Up Successfully")
+        navigate(`/${user.uid}`);
         const userRef = collection(db, "userdata");
         await setDoc(doc(userRef, user.uid), {
           userName: formState.userName,
           email: formState.email,
         });
-        toast.success("Signed Up Successfully")
-        navigate(`/${user.uid}`);
       })
       .catch((error) => {
         if(error.message.includes("auth/invalid-email")){

@@ -51,7 +51,6 @@ export default function UserExpense() {
       setExpensesData(userExpenses);
     } catch (error) {
       setLoading(false);
-      toast.error("Error Fetching Expense");
     }
   };
 
@@ -68,7 +67,7 @@ export default function UserExpense() {
           gutterBottom
           sx={{ mt: 2, mb: 2, fontWeight: "bold" }}
         >
-          {auth.currentUser.displayName ? auth.currentUser.displayName : "User"}
+          {auth.currentUser?.displayName ? auth.currentUser?.displayName : "User"}
           's Expenses:
         </Typography>
         <Box display="flex" flexDirection="column">

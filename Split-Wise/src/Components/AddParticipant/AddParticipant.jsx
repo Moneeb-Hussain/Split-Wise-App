@@ -119,7 +119,7 @@ export default function AddParticipant({
           onChange={(e) => onSelectParticipant(e.target.value)}
         >
           {participants.map((element) =>
-            element.email !== auth.currentUser.email ? (
+            element.email !== auth.currentUser?.email ? (
               <MenuItem key={element.id} value={element.email}>
                 {element.email}
               </MenuItem>

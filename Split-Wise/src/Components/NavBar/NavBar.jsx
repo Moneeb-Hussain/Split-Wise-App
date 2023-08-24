@@ -12,33 +12,30 @@ import Button from "@mui/material/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../Firebase/Firebase";
 import { signOut } from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { setUserAuthToken } from "../../Slices/authSlice";
 
 const drawerWidth = 240;
 function NavBar(props) {
+  const userAuthToken = useSelector(state => state.auth.userAuthToken);
+  const dispatch = useDispatch();
   const { window } = props;
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [userauth, setUserAuth] = useState(false);
+
   const handleLogout = () => {
     signOut(auth)
       .then(() => {
+        dispatch(setUserAuthToken(false));
         navigate("/signin");
       })
       .catch((error) => {
         toast.error("Error Navigating to desired path");
       });
   };
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUserAuth(true);
-      } else {
-        setUserAuth(false);
-      }
-    });
-  }, [auth]);
+
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
@@ -94,7 +91,7 @@ function NavBar(props) {
           >
             <MenuIcon />
           </IconButton>
-          {userauth ? (
+          {userAuthToken ? (
             <Typography
               variant="body1"
               sx={{
@@ -122,7 +119,7 @@ function NavBar(props) {
             </Typography>
           )}
           <Box sx={{ display: { xs: "none", sm: "flex" } }}>
-            {userauth ? (
+            {userAuthToken ? (
               <ListItemButton
                 component={Button}
                 onClick={handleLogout}
