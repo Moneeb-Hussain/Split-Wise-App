@@ -8,13 +8,13 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+Split-Wise
 dist
 .env
 dist-ssr
 *.local
 
 # Editor directories and files
-Split-Wise
 .vscode/*
 !.vscode/extensions.json
 .idea
