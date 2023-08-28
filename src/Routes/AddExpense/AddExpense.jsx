@@ -184,7 +184,7 @@ export default function AddExpense() {
           <Grid item xs={12}>
             <TextField
               type="file"
-              accept="image/*"
+              inputProps={{accept:"image/*"}}
               name="image"
               id="image"
               fullWidth
